@@ -1,0 +1,234 @@
+
+.report-container {
+  background: rgba(15, 22, 40, 0.7);
+  border: 1px solid rgba(0, 200, 180, 0.15);
+  border-radius: 16px;
+  padding: 2rem;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.report-container--empty {
+  align-items: center;
+  justify-content: center;
+}
+
+/* Loading */
+.report-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 0.75rem;
+  position: relative;
+  padding: 3rem;
+}
+
+.pulse-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 200, 180, 0.4);
+  animation: pulse-out 2s ease-out infinite;
+  width: 80px;
+  height: 80px;
+}
+
+.pulse-ring--2 { animation-delay: 0.5s; }
+.pulse-ring--3 { animation-delay: 1s; }
+
+@keyframes pulse-out {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+.loading-icon {
+  font-size: 2.5rem;
+  z-index: 1;
+  animation: spin-slow 4s linear infinite;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 0.95rem;
+  color: #00c8b4;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.loading-sub {
+  font-size: 0.75rem;
+  color: rgba(180, 220, 215, 0.5);
+  z-index: 1;
+}
+
+/* Error */
+.report-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-icon { font-size: 2.5rem; }
+.error-title { color: #ff8080; font-size: 1rem; font-weight: 600; }
+.error-msg { color: rgba(255, 128, 128, 0.7); font-size: 0.82rem; }
+
+/* Placeholder */
+.report-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0.4;
+}
+
+.placeholder-icon { font-size: 3rem; }
+.placeholder-text { font-size: 0.85rem; color: rgba(180, 220, 215, 0.7); text-align: center; }
+
+/* Report content */
+.report-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.report-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.report-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  color: #e0f5f3;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.title-accent {
+  font-size: 0.7rem;
+  color: #00c8b4;
+  border: 1px solid rgba(0, 200, 180, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.report-badge {
+  font-size: 0.7rem;
+  color: rgba(0, 200, 180, 0.7);
+  letter-spacing: 0.08em;
+}
+
+.report-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  border: 1px solid rgba(0, 200, 180, 0.3);
+  background: rgba(0, 200, 180, 0.05);
+  color: rgba(180, 220, 215, 0.8);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.action-btn:hover {
+  background: rgba(0, 200, 180, 0.12);
+  color: #00c8b4;
+}
+
+.action-btn--primary {
+  background: rgba(0, 200, 180, 0.15);
+  color: #00c8b4;
+  border-color: rgba(0, 200, 180, 0.4);
+}
+
+.report-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+.report-section {
+  border-left: 2px solid rgba(0, 200, 180, 0.3);
+  padding-left: 1rem;
+}
+
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.78rem;
+  color: #00c8b4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-num {
+  font-size: 0.65rem;
+  opacity: 0.5;
+}
+
+.section-content {
+  font-size: 0.875rem;
+  color: rgba(224, 245, 243, 0.85);
+  line-height: 1.75;
+}
+
+/* Confidence */
+.report-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 200, 180, 0.12);
+}
+
+.confidence-label {
+  font-size: 0.75rem;
+  color: rgba(180, 220, 215, 0.5);
+  white-space: nowrap;
+}
+
+.confidence-bar-wrapper {
+  flex: 1;
+  height: 4px;
+  background: rgba(0, 200, 180, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.confidence-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #00c8b4, #00ffea);
+  border-radius: 4px;
+  transition: width 0.8s ease;
+}
+
+.confidence-value {
+  font-size: 0.78rem;
+  color: #00c8b4;
+  font-family: 'Orbitron', monospace;
+}

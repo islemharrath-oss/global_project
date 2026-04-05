@@ -1,0 +1,224 @@
+
+.xai-container {
+  background: rgba(15, 22, 40, 0.7);
+  border: 1px solid rgba(0, 200, 180, 0.15);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.xai-container--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: 0.75rem;
+  opacity: 0.4;
+}
+
+.xai-empty-icon { font-size: 2.5rem; }
+.xai-empty-text { font-size: 0.85rem; color: rgba(180, 220, 215, 0.7); }
+
+.xai-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.xai-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  color: #e0f5f3;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.3rem;
+}
+
+.title-accent {
+  font-size: 0.7rem;
+  color: #00c8b4;
+  border: 1px solid rgba(0, 200, 180, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.xai-subtitle {
+  font-size: 0.78rem;
+  color: rgba(180, 220, 215, 0.5);
+}
+
+.xai-method {
+  color: #00c8b4;
+  font-weight: 600;
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid rgba(0, 200, 180, 0.25);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.toggle-btn {
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  background: none;
+  border: none;
+  color: rgba(180, 220, 215, 0.6);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  border-right: 1px solid rgba(0, 200, 180, 0.2);
+}
+
+.toggle-btn:last-child { border-right: none; }
+
+.toggle-btn:hover { color: #00c8b4; background: rgba(0, 200, 180, 0.06); }
+
+.toggle-btn--active {
+  background: rgba(0, 200, 180, 0.15);
+  color: #00c8b4;
+}
+
+/* Viewer */
+.xai-viewer {
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+  margin-bottom: 1rem;
+}
+
+.image-stack {
+  position: relative;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.xai-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.4s ease;
+}
+
+.xai-img--base { position: relative; }
+.xai-img--heatmap { transition: opacity 0.4s ease; }
+
+.xai-pending {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: rgba(0, 200, 180, 0.5);
+  font-size: 0.8rem;
+}
+
+.scan-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 200, 180, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 200, 180, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  animation: grid-pulse 2s ease-in-out infinite;
+}
+
+@keyframes grid-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Opacity control */
+.opacity-control {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  background: rgba(0, 200, 180, 0.05);
+}
+
+.opacity-label {
+  font-size: 0.72rem;
+  color: rgba(180, 220, 215, 0.5);
+  white-space: nowrap;
+}
+
+.opacity-slider {
+  flex: 1;
+  height: 3px;
+  accent-color: #00c8b4;
+  cursor: pointer;
+}
+
+.opacity-value {
+  font-size: 0.72rem;
+  color: #00c8b4;
+  font-family: 'Orbitron', monospace;
+  min-width: 32px;
+  text-align: right;
+}
+
+/* Pathology tags */
+.pathology-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.tags-label {
+  font-size: 0.72rem;
+  color: rgba(180, 220, 215, 0.5);
+  white-space: nowrap;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(255, 160, 0, 0.12);
+  border: 1px solid rgba(255, 160, 0, 0.3);
+  color: #ffaa44;
+}
+
+/* Legend */
+.xai-legend {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 200, 180, 0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: rgba(180, 220, 215, 0.5);
+}
+
+.legend-color {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}

@@ -1,0 +1,210 @@
+.uploader-container {
+  background: rgba(15, 22, 40, 0.7);
+  border: 1px solid rgba(0, 200, 180, 0.15);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.uploader-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  color: #e0f5f3;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.title-accent {
+  font-size: 0.7rem;
+  color: #00c8b4;
+  border: 1px solid rgba(0, 200, 180, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.uploader-desc {
+  font-size: 0.82rem;
+  color: rgba(180, 220, 215, 0.55);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+/* ── Drop Zone ─────────────────────────────────────────────── */
+.drop-zone {
+  border: 2px dashed rgba(0, 200, 180, 0.3);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(0, 200, 180, 0.02);
+
+  /* KEY FIX: relative so the input can be absolute inside */
+  position: relative;
+  overflow: hidden;
+}
+
+.drop-zone:hover,
+.drop-zone--active {
+  border-color: #00c8b4;
+  background: rgba(0, 200, 180, 0.06);
+  box-shadow: 0 0 20px rgba(0, 200, 180, 0.1);
+}
+
+/* KEY FIX: input covers entire zone, transparent, cursor pointer */
+.file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  /* Do NOT use pointer-events: none — the input must receive clicks */
+  z-index: 2;
+}
+
+/* Content sits below the input in z-order but is still visible */
+.drop-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 12px rgba(0, 200, 180, 0.5));
+  animation: float 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.drop-main {
+  position: relative;
+  z-index: 1;
+  font-size: 1rem;
+  color: #e0f5f3;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.drop-sub {
+  position: relative;
+  z-index: 1;
+  font-size: 0.8rem;
+  color: rgba(180, 220, 215, 0.5);
+  margin-bottom: 1rem;
+  pointer-events: none;
+}
+
+.drop-badge {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  font-size: 0.7rem;
+  color: #00c8b4;
+  border: 1px solid rgba(0, 200, 180, 0.3);
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+}
+
+/* ── Preview ───────────────────────────────────────────────── */
+.preview-container {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 200, 180, 0.25);
+}
+
+.preview-image-wrapper {
+  position: relative;
+  background: #0a0f1e;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+  filter: contrast(1.1) brightness(1);
+  position: relative;
+  z-index: 1;
+}
+
+.preview-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.preview-scan-line {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 200, 180, 0.6), transparent);
+  animation: scan 3s ease-in-out infinite;
+}
+
+@keyframes scan {
+  0%   { top: 0%;   opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.preview-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: rgba(10, 15, 30, 0.8);
+}
+
+.preview-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: rgba(180, 220, 215, 0.7);
+}
+
+.preview-icon { font-size: 1rem; }
+
+.preview-name {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-clear {
+  background: rgba(255, 80, 80, 0.1);
+  border: 1px solid rgba(255, 80, 80, 0.3);
+  color: #ff8080;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.preview-clear:hover:not(:disabled) {
+  background: rgba(255, 80, 80, 0.2);
+}
+
+.preview-clear:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
