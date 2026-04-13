@@ -2,6 +2,22 @@
 
 A modern, full-stack web application for analyzing X-ray images using AI-powered diagnostics with explainable AI (XAI) visualization.
 
+## Multi-Agent AI Service
+
+This repository now includes a dedicated AI microservice for multi-agent inference orchestration.
+
+- Setup guide: `AI_SERVICE_SETUP.md`
+- Service endpoint (Docker): `http://localhost:9000`
+- Django calls this service from `POST /api/analyze/`
+- Database: PostgreSQL (`db` service in Docker)
+
+## Doctor Portal Authentication
+
+- Doctors create accounts and sign in with JWT authentication.
+- Doctors can create patient accounts from the portal.
+- Each analysis is linked to a doctor and optionally to a patient.
+- History and analysis endpoints are secured and returned per user scope.
+
 ## 🎯 Project Overview
 
 MedVision is a Django + React application designed to:
@@ -130,11 +146,23 @@ Currently, the API is open (no authentication required). For production, impleme
 #### POST `/api/analyze/`
 Upload and analyze an X-ray image.
 
+Requires a logged-in doctor account.
+
 **Request:**
 ```bash
 curl -X POST http://localhost:8000/api/analyze/ \
-  -F "image=@xray.jpg"
+  -H "Authorization: Bearer <access_token>" \
+  -F "image=@xray.jpg" \
+  -F "patient_id=1"
 ```
+
+#### Authentication endpoints
+
+- `POST /api/auth/register/doctor/` - create a doctor account
+- `POST /api/auth/token/` - login and get JWT tokens
+- `POST /api/auth/token/refresh/` - refresh access token
+- `GET /api/auth/me/` - current authenticated user
+- `GET|POST /api/auth/patients/` - list or create patient accounts
 
 **Response:**
 ```json
@@ -341,3 +369,12 @@ For issues, feature requests, or contributions:
 ---
 
 **Last Updated:** January 2024 | **Status:** Development
+
+
+
+Ouvre http://localhost:8081
+System: PostgreSQL
+Server: db
+Username: medvision_user
+Password: medvision_password
+Database: medvision_db

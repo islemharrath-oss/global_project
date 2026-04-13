@@ -1,7 +1,9 @@
 
 import os
 from pathlib import Path
+from datetime import timedelta
 from decouple import config, Csv
+from distutils.util import strtobool
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,7 +15,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-change-this-in-production")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG", default=True, cast=bool)
+_debug_raw = config("DEBUG", default="True")
+try:
+    DEBUG = bool(strtobool(str(_debug_raw)))
+except (ValueError, AttributeError):
+    DEBUG = True
 
 ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", default="localhost,127.0.0.1", cast=Csv())
 
@@ -29,6 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "accounts",
     "api",
 ]
 
@@ -48,6 +55,27 @@ CORS_ALLOWED_ORIGINS = config(
     default="http://localhost:3000,http://127.0.0.1:3000",
     cast=Csv()
 )
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
+AI_SERVICE_URL = config("AI_SERVICE_URL", default="http://ai-service:9000")
+AI_SERVICE_TIMEOUT = config("AI_SERVICE_TIMEOUT", default=120, cast=int)
+AI_FALLBACK_TO_MOCK = config("AI_FALLBACK_TO_MOCK", default=True, cast=bool)
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+}
 
 # Media files
 MEDIA_URL = '/media/'

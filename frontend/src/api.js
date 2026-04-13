@@ -1,14 +1,12 @@
-
 /**
  * Medical X-ray Analysis API Client
- * 
- * This module handles all API communication with the Django backend.
- * Configuration is pulled from environment variables.
+ * Handles authentication and secured backend requests.
  */
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL || '/api';
+const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
+const ACCESS_TOKEN_KEY = 'medvision_access_token';
+const REFRESH_TOKEN_KEY = 'medvision_refresh_token';
 
-// API Error class for better error handling
 class APIError extends Error {
   constructor(message, status, data) {
     super(message);
@@ -18,133 +16,205 @@ class APIError extends Error {
   }
 }
 
-/**
- * Analyze an X-ray image
- * 
- * @param {File} imageFile - The image file to analyze
- * @returns {Promise<Object>} Analysis results
- * @throws {APIError} If the request fails
- */
-export async function analyzeXray(imageFile) {
+function flattenErrorPayload(data) {
+  if (!data) return '';
+  if (typeof data === 'string') return data;
+  if (Array.isArray(data)) {
+    return data.map((item) => flattenErrorPayload(item)).filter(Boolean).join(' | ');
+  }
+  if (typeof data === 'object') {
+    return Object.entries(data)
+      .map(([key, value]) => {
+        const normalized = flattenErrorPayload(value);
+        if (!normalized) return '';
+        return `${key}: ${normalized}`;
+      })
+      .filter(Boolean)
+      .join(' | ');
+  }
+  return '';
+}
+
+function getToken() {
+  return localStorage.getItem(ACCESS_TOKEN_KEY);
+}
+
+function getRefreshToken() {
+  return localStorage.getItem(REFRESH_TOKEN_KEY);
+}
+
+export function getStoredUserTokens() {
+  return {
+    access: localStorage.getItem(ACCESS_TOKEN_KEY),
+    refresh: localStorage.getItem(REFRESH_TOKEN_KEY),
+  };
+}
+
+export function setAuthTokens(access, refresh) {
+  if (access) localStorage.setItem(ACCESS_TOKEN_KEY, access);
+  if (refresh) localStorage.setItem(REFRESH_TOKEN_KEY, refresh);
+}
+
+export function clearAuthTokens() {
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
+}
+
+async function refreshAccessToken() {
+  const refresh = getRefreshToken();
+  if (!refresh) {
+    throw new APIError('Session expired. Please sign in again.', 401, { detail: 'No refresh token' });
+  }
+
+  const response = await fetch(`${API_BASE}/auth/token/refresh/`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ refresh }),
+  });
+
+  const contentType = response.headers.get('content-type') || '';
+  const data = contentType.includes('application/json') ? await response.json() : null;
+
+  if (!response.ok || !data?.access) {
+    const validationMessage = flattenErrorPayload(data);
+    const message = data?.detail || validationMessage || 'Session expired. Please sign in again.';
+    throw new APIError(message, response.status || 401, data);
+  }
+
+  setAuthTokens(data.access, refresh);
+  return data.access;
+}
+
+async function apiFetch(path, options = {}) {
+  const skipAuth = options.skipAuth === true || path.startsWith('/auth/token/') || path.startsWith('/auth/register/doctor/');
+  const { skipAuth: _skipAuth, ...fetchOptions } = options;
+
+  const doRequest = async (overrideToken = null) => {
+    const headers = {
+      Accept: 'application/json',
+      ...(options.headers || {}),
+    };
+
+    const token = overrideToken || getToken();
+    if (token && !skipAuth) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE}${path}`, {
+      ...fetchOptions,
+      headers,
+    });
+
+    const contentType = response.headers.get('content-type') || '';
+    const data = contentType.includes('application/json') ? await response.json() : null;
+    return { response, data };
+  };
+
+  let { response, data } = await doRequest();
+
+  if (response.status === 401 && !skipAuth) {
+    try {
+      const newAccess = await refreshAccessToken();
+      ({ response, data } = await doRequest(newAccess));
+    } catch (_refreshErr) {
+      clearAuthTokens();
+      throw new APIError('Session expired. Please sign in again.', 401, { detail: 'Refresh token invalid' });
+    }
+  }
+
+  if (!response.ok) {
+    const validationMessage = flattenErrorPayload(data);
+    const message = data?.error || data?.detail || validationMessage || `Erreur serveur (${response.status})`;
+    if (response.status === 401 && !skipAuth) {
+      clearAuthTokens();
+    }
+    throw new APIError(message, response.status, data);
+  }
+
+  return data;
+}
+
+export async function loginDoctor(username, password) {
+  const data = await apiFetch('/auth/token/', {
+    method: 'POST',
+    skipAuth: true,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: (username || '').trim(), password: password || '' }),
+  });
+  setAuthTokens(data.access, data.refresh);
+  return data;
+}
+
+export async function registerDoctor(payload) {
+  const normalizedPayload = {
+    username: (payload?.username || '').trim(),
+    email: (payload?.email || '').trim(),
+    password: payload?.password || '',
+    first_name: (payload?.first_name || '').trim(),
+    last_name: (payload?.last_name || '').trim(),
+    specialty: (payload?.specialty || '').trim(),
+    license_number: (payload?.license_number || '').trim(),
+    hospital: (payload?.hospital || '').trim(),
+    phone: (payload?.phone || '').trim(),
+  };
+
+  const data = await apiFetch('/auth/register/doctor/', {
+    method: 'POST',
+    skipAuth: true,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(normalizedPayload),
+  });
+  setAuthTokens(data.access, data.refresh);
+  return data;
+}
+
+export async function getCurrentUser() {
+  return apiFetch('/auth/me/', { method: 'GET' });
+}
+
+export async function createPatient(payload) {
+  return apiFetch('/auth/patients/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getPatients() {
+  return apiFetch('/auth/patients/', { method: 'GET' });
+}
+
+export async function analyzeXray(imageFile, patientId = null, patientContext = '') {
   if (!imageFile) {
     throw new APIError('Aucune image fournie', 400, { error: 'Aucune image fournie' });
   }
 
   const formData = new FormData();
   formData.append('image', imageFile);
+  if (patientId) formData.append('patient_id', String(patientId));
+  if (patientContext) formData.append('patient_context', patientContext);
 
-  try {
-    const response = await fetch(`${API_BASE}/analyze/`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      const errorMessage = data.error || `Erreur serveur (${response.status})`;
-      throw new APIError(errorMessage, response.status, data);
-    }
-
-    return data;
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    throw new APIError(
-      error.message || 'Erreur de connexion au serveur',
-      0,
-      { error: error.message }
-    );
-  }
+  return apiFetch('/analyze/', {
+    method: 'POST',
+    body: formData,
+  });
 }
 
-/**
- * Retrieve the history of all X-ray analyses
- * 
- * @returns {Promise<Object>} Object with 'results' array of analyses
- * @throws {APIError} If the request fails
- */
 export async function getHistory() {
-  try {
-    const response = await fetch(`${API_BASE}/history/`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      const errorMessage = data.error || 'Erreur lors de la récupération de l\'historique';
-      throw new APIError(errorMessage, response.status, data);
-    }
-
-    return data;
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    throw new APIError(
-      'Erreur de connexion au serveur',
-      0,
-      { error: error.message }
-    );
-  }
+  return apiFetch('/history/', { method: 'GET' });
 }
 
-/**
- * Delete an X-ray analysis by ID
- * 
- * @param {number} id - The analysis ID to delete
- * @returns {Promise<void>}
- * @throws {APIError} If the request fails
- */
 export async function deleteAnalysis(id) {
   if (!id) {
     throw new APIError('ID d\'analyse manquant', 400, { error: 'ID manquant' });
   }
 
-  try {
-    const response = await fetch(`${API_BASE}/history/${id}/`, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      let data = {};
-      try {
-        data = await response.json();
-      } catch (e) {
-        // Response might not be JSON for 204 No Content
-      }
-      const errorMessage = data.error || 'Erreur lors de la suppression';
-      throw new APIError(errorMessage, response.status, data);
-    }
-
-    return response.status === 204 ? null : await response.json();
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    throw new APIError(
-      'Erreur de connexion au serveur',
-      0,
-      { error: error.message }
-    );
-  }
+  return apiFetch(`/history/${id}/`, { method: 'DELETE' });
 }
 
-/**
- * Get the API base URL (useful for debugging)
- * @returns {string} The API base URL
- */
 export function getAPIBaseURL() {
   return API_BASE;
 }

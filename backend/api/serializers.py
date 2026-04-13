@@ -13,6 +13,9 @@ class XRayAnalysisSerializer(serializers.ModelSerializer):
     
     image_url = serializers.SerializerMethodField()
     xai_url = serializers.SerializerMethodField()
+    doctor_name = serializers.SerializerMethodField()
+    patient_name = serializers.SerializerMethodField()
+    patient_id = serializers.SerializerMethodField()
 
     class Meta:
         model = XRayAnalysis
@@ -24,6 +27,9 @@ class XRayAnalysisSerializer(serializers.ModelSerializer):
             'pathologies',
             'recommendations',
             'confidence_score',
+            'doctor_name',
+            'patient_name',
+            'patient_id',
             'image_url',
             'xai_url'
         ]
@@ -31,7 +37,10 @@ class XRayAnalysisSerializer(serializers.ModelSerializer):
             'id',
             'date',
             'image_url',
-            'xai_url'
+            'xai_url',
+            'doctor_name',
+            'patient_name',
+            'patient_id'
         ]
 
     def get_image_url(self, obj):
@@ -63,6 +72,19 @@ class XRayAnalysisSerializer(serializers.ModelSerializer):
         if obj.xai_image and request:
             return request.build_absolute_uri(obj.xai_image.url)
         return None
+
+    def get_doctor_name(self, obj):
+        if obj.doctor:
+            return obj.doctor.get_full_name() or obj.doctor.username
+        return None
+
+    def get_patient_name(self, obj):
+        if obj.patient:
+            return obj.patient.full_name
+        return None
+
+    def get_patient_id(self, obj):
+        return obj.patient.id if obj.patient else None
 
     def validate_pathologies(self, value):
         """

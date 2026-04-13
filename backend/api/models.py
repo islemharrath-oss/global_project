@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import User
 
 
 class XRayAnalysis(models.Model):
@@ -30,6 +31,22 @@ class XRayAnalysis(models.Model):
     image = models.ImageField(
         upload_to='xrays/',
         help_text=_('Original X-ray image file')
+    )
+    doctor = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='xray_analyses',
+        help_text=_('Doctor who created the analysis')
+    )
+    patient = models.ForeignKey(
+        'accounts.PatientProfile',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='xray_analyses',
+        help_text=_('Patient associated with the analysis')
     )
     date = models.DateTimeField(
         auto_now_add=True,
@@ -73,7 +90,8 @@ class XRayAnalysis(models.Model):
 
     def __str__(self):
         """Return a formatted string representation of the analysis."""
-        return f"Analyse {self.id} - {self.date.strftime('%d/%m/%Y %H:%M')}"
+        patient_label = f" - {self.patient.full_name}" if self.patient else ""
+        return f"Analyse {self.id}{patient_label} - {self.date.strftime('%d/%m/%Y %H:%M')}"
 
     def clean(self):
         """Validate model fields."""

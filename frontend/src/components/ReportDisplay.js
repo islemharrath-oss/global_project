@@ -1,9 +1,22 @@
 
 import React, { useState } from "react";
+import XAIViewer from "./XAIViewer";
 import "./ReportDisplay.css";
 
 function ReportDisplay({ report, isLoading, error }) {
   const [copied, setCopied] = useState(false);
+
+  const parsedRawReport = (() => {
+    if (!report?.raw_report || typeof report.raw_report !== "string") {
+      return {};
+    }
+
+    try {
+      return JSON.parse(report.raw_report);
+    } catch {
+      return {};
+    }
+  })();
 
   const handleCopy = () => {
     if (!report) return;
@@ -75,9 +88,33 @@ function ReportDisplay({ report, isLoading, error }) {
   const sections = report.sections || [
     { title: "Findings", content: report.findings || "" },
     { title: "Impression", content: report.impression || "" },
-    { title: "Pathologies Détectées", content: report.pathologies || "" },
+    {
+      title: "Pathologies Détectées",
+      content: Array.isArray(report.pathologies)
+        ? report.pathologies.join(", ")
+        : report.pathologies || "",
+    },
     { title: "Recommandations", content: report.recommendations || "" },
   ];
+
+  const originalImage =
+    report.image_url ||
+    report.image ||
+    report.imageUrl ||
+    null;
+  const xaiImage =
+    report.xai_url ||
+    report.xai_image ||
+    report.xaiImage ||
+    null;
+  const xaiMethod =
+    report.xai_method ||
+    report.xaiMethod ||
+    parsedRawReport.xai_method ||
+    "Grad-CAM";
+
+  // Render XAI block under report whenever we have at least the original image.
+  const showXAI = Boolean(originalImage || xaiImage);
 
   return (
     <div className="report-container">
@@ -113,6 +150,17 @@ function ReportDisplay({ report, isLoading, error }) {
           </div>
         ))}
       </div>
+
+      {showXAI && (
+        <div className="report-xai-section">
+          <XAIViewer
+            originalImage={originalImage}
+            xaiImage={xaiImage}
+            xaiMethod={xaiMethod}
+            pathologies={Array.isArray(report.pathologies) ? report.pathologies : []}
+          />
+        </div>
+      )}
 
       {report.confidence_score && (
         <div className="report-footer">

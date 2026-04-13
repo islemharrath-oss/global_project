@@ -3,7 +3,7 @@
   background: rgba(15, 22, 40, 0.7);
   border: 1px solid rgba(0, 200, 180, 0.15);
   border-radius: 16px;
-  padding: 2rem;
+  padding: 2.25rem;
   min-height: 300px;
   display: flex;
   flex-direction: column;
@@ -111,7 +111,7 @@
 
 .report-title {
   font-family: 'Orbitron', monospace;
-  font-size: 1rem;
+  font-size: 1.35rem;
   color: #e0f5f3;
   display: flex;
   align-items: center;
@@ -127,7 +127,7 @@
 }
 
 .report-badge {
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   color: rgba(0, 200, 180, 0.7);
   letter-spacing: 0.08em;
 }
@@ -139,9 +139,9 @@
 }
 
 .action-btn {
-  padding: 6px 12px;
+  padding: 10px 16px;
   border-radius: 6px;
-  font-size: 0.78rem;
+  font-size: 1.05rem;
   border: 1px solid rgba(0, 200, 180, 0.3);
   background: rgba(0, 200, 180, 0.05);
   color: rgba(180, 220, 215, 0.8);
@@ -168,6 +168,10 @@
   flex: 1;
 }
 
+.report-xai-section {
+  margin-top: 1.5rem;
+}
+
 .report-section {
   border-left: 2px solid rgba(0, 200, 180, 0.3);
   padding-left: 1rem;
@@ -175,7 +179,7 @@
 
 .section-title {
   font-family: 'Orbitron', monospace;
-  font-size: 0.78rem;
+  font-size: 1.15rem;
   color: #00c8b4;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -191,9 +195,9 @@
 }
 
 .section-content {
-  font-size: 0.875rem;
+  font-size: 1.3rem;
   color: rgba(224, 245, 243, 0.85);
-  line-height: 1.75;
+  line-height: 1.65;
 }
 
 /* Confidence */
@@ -207,7 +211,7 @@
 }
 
 .confidence-label {
-  font-size: 0.75rem;
+  font-size: 1.05rem;
   color: rgba(180, 220, 215, 0.5);
   white-space: nowrap;
 }
@@ -228,7 +232,39 @@
 }
 
 .confidence-value {
-  font-size: 0.78rem;
+  font-size: 1.1rem;
   color: #00c8b4;
   font-family: 'Orbitron', monospace;
+}
+
+@media (max-width: 900px) {
+  .report-container {
+    padding: 1.25rem;
+  }
+
+  .report-title {
+    font-size: 1.05rem;
+  }
+
+  .report-badge {
+    font-size: 0.78rem;
+  }
+
+  .action-btn {
+    font-size: 0.88rem;
+    padding: 8px 12px;
+  }
+
+  .section-title {
+    font-size: 0.9rem;
+  }
+
+  .section-content {
+    font-size: 1.02rem;
+  }
+
+  .confidence-label,
+  .confidence-value {
+    font-size: 0.9rem;
+  }
 }

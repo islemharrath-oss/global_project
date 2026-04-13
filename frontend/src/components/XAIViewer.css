@@ -30,7 +30,7 @@
 
 .xai-title {
   font-family: 'Orbitron', monospace;
-  font-size: 1rem;
+  font-size: 1.25rem;
   color: #e0f5f3;
   display: flex;
   align-items: center;
@@ -47,7 +47,7 @@
 }
 
 .xai-subtitle {
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   color: rgba(180, 220, 215, 0.5);
 }
 
@@ -64,8 +64,8 @@
 }
 
 .toggle-btn {
-  padding: 6px 14px;
-  font-size: 0.75rem;
+  padding: 8px 16px;
+  font-size: 0.95rem;
   background: none;
   border: none;
   color: rgba(180, 220, 215, 0.6);
@@ -94,7 +94,7 @@
 
 .image-stack {
   position: relative;
-  min-height: 280px;
+  min-height: 420px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -212,8 +212,31 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   color: rgba(180, 220, 215, 0.5);
+}
+
+@media (max-width: 900px) {
+  .xai-title {
+    font-size: 1rem;
+  }
+
+  .xai-subtitle {
+    font-size: 0.82rem;
+  }
+
+  .toggle-btn {
+    font-size: 0.82rem;
+    padding: 6px 12px;
+  }
+
+  .image-stack {
+    min-height: 280px;
+  }
+
+  .legend-item {
+    font-size: 0.76rem;
+  }
 }
 
 .legend-color {
