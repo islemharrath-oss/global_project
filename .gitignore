@@ -60,3 +60,5 @@ docker-compose.override.yml
 # Local AI model weights (keep folder structure only)
 models/*
 !models/.gitkeep
+
+LangGraph/.venv311/
