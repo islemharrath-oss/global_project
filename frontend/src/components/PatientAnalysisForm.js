@@ -16,7 +16,7 @@ function PatientAnalysisForm({ patientId, onReportGenerated, onAnalysisStateChan
 
   const handleAnalyze = async () => {
     if (!imageFile || !patientId) {
-      setError('Image ou patient manquant');
+      setError('Missing image or patient');
       return;
     }
 
@@ -31,7 +31,7 @@ function PatientAnalysisForm({ patientId, onReportGenerated, onAnalysisStateChan
       onReportGenerated(data);
     } catch (err) {
       console.error('Analyze error:', err);
-      setError(err.message || "Erreur lors de l'analyse");
+      setError(err.message || "Error during analysis");
     } finally {
       setIsLoading(false);
       if (onAnalysisStateChange) {
@@ -61,7 +61,7 @@ function PatientAnalysisForm({ patientId, onReportGenerated, onAnalysisStateChan
       {error && (
         <div className="analysis-error">
           <span>❌ {error}</span>
-          <button onClick={handleClear}>Effacer et réessayer</button>
+          <button onClick={handleClear}>Clear and retry</button>
         </div>
       )}
     </div>

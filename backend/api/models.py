@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 
 
+
+
 class XRayAnalysis(models.Model):
     """
     Represents a single X-ray image analysis with findings, impression, and recommendations.

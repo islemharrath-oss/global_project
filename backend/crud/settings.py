@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 from datetime import timedelta
@@ -7,9 +6,6 @@ from distutils.util import strtobool
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-change-this-in-production")
@@ -22,9 +18,6 @@ except (ValueError, AttributeError):
     DEBUG = True
 
 ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", default="localhost,127.0.0.1", cast=Csv())
-
-
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -66,15 +59,15 @@ REST_FRAMEWORK = {
     ],
 }
 
-AI_SERVICE_URL = config("AI_SERVICE_URL", default="http://ai-service:9000")
-AI_SERVICE_TIMEOUT = config("AI_SERVICE_TIMEOUT", default=120, cast=int)
+AI_SERVICE_URL = config("AI_SERVICE_URL", default="http://localhost:9000")
+AI_SERVICE_TIMEOUT = config("AI_SERVICE_TIMEOUT", default=1800, cast=int)
 AI_FALLBACK_TO_MOCK = config("AI_FALLBACK_TO_MOCK", default=True, cast=bool)
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
 }
 
 # Media files
@@ -100,15 +93,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "crud.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-# Supports both SQLite (development) and PostgreSQL (production/Docker)
-
 DB_ENGINE = config("DB_ENGINE", default="django.db.backends.sqlite3")
 
 if DB_ENGINE == "django.db.backends.postgresql":
-    # PostgreSQL configuration (used in Docker)
     DATABASES = {
         "default": {
             "ENGINE": DB_ENGINE,
@@ -121,7 +108,6 @@ if DB_ENGINE == "django.db.backends.postgresql":
         }
     }
 else:
-    # SQLite configuration (development)
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -129,48 +115,23 @@ else:
         }
     }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-# Use BigAutoField for implicit primary keys.
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Logging Configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -185,12 +146,8 @@ LOGGING = {
         },
     },
     'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
+        'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'},
+        'require_debug_true': {'()': 'django.utils.log.RequireDebugTrue'},
     },
     'handlers': {
         'console': {
@@ -202,7 +159,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
-            'maxBytes': 1024 * 1024 * 10,  # 10 MB
+            'maxBytes': 1024 * 1024 * 10,
             'backupCount': 5,
             'formatter': 'verbose',
         },
@@ -229,9 +186,7 @@ LOGGING = {
     },
 }
 
-# Create logs directory if it doesn't exist
 import os as _os
 _logs_dir = _os.path.join(BASE_DIR, 'logs')
 if not _os.path.exists(_logs_dir):
     _os.makedirs(_logs_dir)
-

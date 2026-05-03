@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import "./HistoryPanel.css";
 import { getHistory, deleteAnalysis } from "../api";
@@ -25,15 +24,15 @@ function HistoryPanel({ onSelectAnalysis }) {
           id: 1,
           date: "2025-06-10T14:30:00",
           filename: "patient_001.png",
-          impression: "Consolidation bilatérale compatible avec une pneumonie.",
-          pathologies: ["Pneumonie", "Infiltrats"],
+          impression: "Bilateral consolidation compatible with pneumonia.",
+          pathologies: ["Pneumonia", "Infiltrates"],
           confidence: 91,
         },
         {
           id: 2,
           date: "2025-06-09T10:15:00",
           filename: "xray_case_002.jpg",
-          impression: "Aucune anomalie significative détectée.",
+          impression: "No significant abnormality detected.",
           pathologies: [],
           confidence: 88,
         },
@@ -50,7 +49,7 @@ function HistoryPanel({ onSelectAnalysis }) {
 
   const handleDelete = async (e, id) => {
     e.stopPropagation();
-    if (!window.confirm("Supprimer cette analyse ?")) return;
+    if (!window.confirm("Delete this analysis?")) return;
     try {
       await deleteAnalysis(id);
       setHistory((prev) => prev.filter((h) => h.id !== id));
@@ -61,7 +60,7 @@ function HistoryPanel({ onSelectAnalysis }) {
 
   const formatDate = (iso) => {
     const d = new Date(iso);
-    return d.toLocaleDateString("fr-FR", {
+    return d.toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -74,10 +73,10 @@ function HistoryPanel({ onSelectAnalysis }) {
     <div className="history-container">
       <div className="history-header">
         <h2 className="history-title">
-          <span className="title-accent">📋</span> Historique des Analyses
+          <span className="title-accent">📋</span> Analysis History
         </h2>
-        <button className="refresh-btn" onClick={fetchHistory} title="Actualiser">
-          ↻ Actualiser
+        <button className="refresh-btn" onClick={fetchHistory} title="Refresh">
+          ↻ Refresh
         </button>
       </div>
 
@@ -86,12 +85,12 @@ function HistoryPanel({ onSelectAnalysis }) {
           <div className="loading-dots">
             <span /><span /><span />
           </div>
-          <p>Chargement de l'historique...</p>
+          <p>Loading history...</p>
         </div>
       ) : history.length === 0 ? (
         <div className="history-empty">
           <span>📭</span>
-          <p>Aucune analyse enregistrée</p>
+          <p>No analyses recorded</p>
         </div>
       ) : (
         <div className="history-list">
@@ -103,13 +102,13 @@ function HistoryPanel({ onSelectAnalysis }) {
             >
               <div className="card-top">
                 <div className="card-info">
-                  <span className="card-filename">🫁 {item.filename || item.image_url?.split("/").pop() || `analyse_${item.id}`}</span>
+                  <span className="card-filename">🫁 {item.filename || item.image_url?.split("/").pop() || `analysis_${item.id}`}</span>
                   <span className="card-date">{formatDate(item.date)}</span>
                 </div>
                 <button
                   className="card-delete"
                   onClick={(e) => handleDelete(e, item.id)}
-                  title="Supprimer"
+                  title="Delete"
                 >
                   ✕
                 </button>
@@ -128,7 +127,7 @@ function HistoryPanel({ onSelectAnalysis }) {
                   )}
                 </div>
                 {(item.confidence_score ?? item.confidence) && (
-                  <span className="card-confidence">{item.confidence_score ?? item.confidence}% IA</span>
+                  <span className="card-confidence">{item.confidence_score ?? item.confidence}% AI</span>
                 )}
               </div>
             </div>

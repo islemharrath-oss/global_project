@@ -1,4 +1,4 @@
-services:
+﻿services:
   # PostgreSQL database
   db:
     image: postgres:15-alpine
@@ -30,32 +30,6 @@ services:
     networks:
       - medvision_network
 
-  # Multi-agent AI service
-  ai-service:
-    build:
-      context: ./ai-service
-      dockerfile: Dockerfile
-    container_name: medvision-ai-service
-    environment:
-      MODEL_ROOT: "/models"
-      CNN_MODEL_PATH: "/models/cnn"
-      MEDGEMMA_MODEL_PATH: "/models/medgemma"
-      CHEXBERT_MODEL_PATH: "/models/chexbert"
-      QUALITY_THRESHOLD: "0.7"
-      MAX_REGEN_ATTEMPTS: "3"
-    volumes:
-      - ./models:/models:ro
-    ports:
-      - "9000:9000"
-    networks:
-      - medvision_network
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9000/health', timeout=5)"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
   # Django Backend
   backend:
     build:
@@ -65,7 +39,7 @@ services:
     command: >
       sh -c "python manage.py migrate &&
              python manage.py collectstatic --noinput &&
-             gunicorn --bind 0.0.0.0:8000 --workers 4 crud.wsgi:application"
+             gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 600 crud.wsgi:application"
     environment:
       DEBUG: "0"
       SECRET_KEY: "django-insecure-change-this-in-production-use-random-string"
@@ -77,8 +51,8 @@ services:
       DB_PASSWORD: "medvision_password"
       DB_HOST: "db"
       DB_PORT: "5432"
-      AI_SERVICE_URL: "http://ai-service:9000"
-      AI_SERVICE_TIMEOUT: "120"
+      AI_SERVICE_URL: "http://172.19.128.1:9000"
+      AI_SERVICE_TIMEOUT: "600"
       AI_FALLBACK_TO_MOCK: "1"
     volumes:
       - ./backend:/app
@@ -89,9 +63,10 @@ services:
       - "8000:8000"
     networks:
       - medvision_network
+
     depends_on:
-      - db
-      - ai-service
+      db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/"]
       interval: 30s
@@ -124,7 +99,7 @@ services:
       retries: 3
       start_period: 40s
 
-  # Nginx Reverse Proxy (optional, for production-like setup)
+  # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
     container_name: medvision-nginx
@@ -148,3 +123,4 @@ volumes:
 networks:
   medvision_network:
     driver: bridge
+

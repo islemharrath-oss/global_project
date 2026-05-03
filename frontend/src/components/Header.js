@@ -8,10 +8,10 @@ function Header({ activePage, onNavigate, user, onLogout }) {
   const navItems = user?.role === 'doctor' 
     ? [
         { id: "dashboard", label: "Patients", icon: "👥" },
-        { id: "about", label: "À propos", icon: "ℹ️" },
+        { id: "about", label: "About", icon: "ℹ️" },
       ]
     : [
-        { id: "about", label: "À propos", icon: "ℹ️" },
+        { id: "about", label: "About", icon: "ℹ️" },
       ];
 
   return (

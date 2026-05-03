@@ -1,14 +1,15 @@
 .uploader-container {
-  background: rgba(15, 22, 40, 0.7);
-  border: 1px solid rgba(0, 200, 180, 0.15);
+  background: #ffffff;
+  border: 1px solid #c8e9e7;
   border-radius: 16px;
   padding: 2rem;
+  box-shadow: 0 2px 12px rgba(14, 165, 160, 0.06);
 }
 
 .uploader-title {
   font-family: 'Orbitron', monospace;
   font-size: 1rem;
-  color: #e0f5f3;
+  color: #0d3b39;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
@@ -17,42 +18,39 @@
 
 .title-accent {
   font-size: 0.7rem;
-  color: #00c8b4;
-  border: 1px solid rgba(0, 200, 180, 0.4);
+  color: #0a7a75;
+  border: 1px solid #9fd9d6;
   padding: 2px 6px;
   border-radius: 4px;
+  background: #e6f7f6;
 }
 
 .uploader-desc {
   font-size: 0.82rem;
-  color: rgba(180, 220, 215, 0.55);
+  color: #4a8a88;
   margin-bottom: 1.5rem;
   line-height: 1.6;
 }
 
-/* ── Drop Zone ─────────────────────────────────────────────── */
 .drop-zone {
-  border: 2px dashed rgba(0, 200, 180, 0.3);
+  border: 2px dashed #9fd9d6;
   border-radius: 12px;
   padding: 3rem 2rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: rgba(0, 200, 180, 0.02);
-
-  /* KEY FIX: relative so the input can be absolute inside */
+  background: #f7fdfc;
   position: relative;
   overflow: hidden;
 }
 
 .drop-zone:hover,
 .drop-zone--active {
-  border-color: #00c8b4;
-  background: rgba(0, 200, 180, 0.06);
-  box-shadow: 0 0 20px rgba(0, 200, 180, 0.1);
+  border-color: #0ea5a0;
+  background: #e6f7f6;
+  box-shadow: 0 0 16px rgba(14, 165, 160, 0.12);
 }
 
-/* KEY FIX: input covers entire zone, transparent, cursor pointer */
 .file-input {
   position: absolute;
   inset: 0;
@@ -60,17 +58,15 @@
   height: 100%;
   opacity: 0;
   cursor: pointer;
-  /* Do NOT use pointer-events: none — the input must receive clicks */
   z-index: 2;
 }
 
-/* Content sits below the input in z-order but is still visible */
 .drop-icon {
   position: relative;
   z-index: 1;
   font-size: 3rem;
   margin-bottom: 1rem;
-  filter: drop-shadow(0 0 12px rgba(0, 200, 180, 0.5));
+  filter: drop-shadow(0 0 8px rgba(14, 165, 160, 0.3));
   animation: float 3s ease-in-out infinite;
   pointer-events: none;
 }
@@ -84,7 +80,7 @@
   position: relative;
   z-index: 1;
   font-size: 1rem;
-  color: #e0f5f3;
+  color: #1a3f3e;
   margin-bottom: 0.3rem;
   font-weight: 500;
   pointer-events: none;
@@ -94,7 +90,7 @@
   position: relative;
   z-index: 1;
   font-size: 0.8rem;
-  color: rgba(180, 220, 215, 0.5);
+  color: #6aacaa;
   margin-bottom: 1rem;
   pointer-events: none;
 }
@@ -104,24 +100,24 @@
   z-index: 1;
   display: inline-block;
   font-size: 0.7rem;
-  color: #00c8b4;
-  border: 1px solid rgba(0, 200, 180, 0.3);
+  color: #0a7a75;
+  border: 1px solid #9fd9d6;
+  background: #e6f7f6;
   padding: 3px 10px;
   border-radius: 20px;
   letter-spacing: 0.1em;
   pointer-events: none;
 }
 
-/* ── Preview ───────────────────────────────────────────────── */
 .preview-container {
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(0, 200, 180, 0.25);
+  border: 1px solid #c8e9e7;
 }
 
 .preview-image-wrapper {
   position: relative;
-  background: #0a0f1e;
+  background: #f0faf9;
   min-height: 200px;
   display: flex;
   align-items: center;
@@ -134,7 +130,7 @@
   height: auto;
   max-height: 420px;
   object-fit: contain;
-  filter: contrast(1.1) brightness(1);
+  filter: contrast(1.05) brightness(1.02);
   position: relative;
   z-index: 1;
 }
@@ -152,7 +148,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(0, 200, 180, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 160, 0.5), transparent);
   animation: scan 3s ease-in-out infinite;
 }
 
@@ -168,7 +164,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  background: rgba(10, 15, 30, 0.8);
+  background: #f0faf9;
+  border-top: 1px solid #dff0ef;
 }
 
 .preview-info {
@@ -176,7 +173,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: rgba(180, 220, 215, 0.7);
+  color: #3d6a68;
 }
 
 .preview-icon { font-size: 1rem; }
@@ -189,9 +186,9 @@
 }
 
 .preview-clear {
-  background: rgba(255, 80, 80, 0.1);
-  border: 1px solid rgba(255, 80, 80, 0.3);
-  color: #ff8080;
+  background: #fff0f0;
+  border: 1px solid #f5b8b8;
+  color: #c04040;
   font-size: 0.75rem;
   padding: 4px 10px;
   border-radius: 6px;
@@ -201,7 +198,8 @@
 }
 
 .preview-clear:hover:not(:disabled) {
-  background: rgba(255, 80, 80, 0.2);
+  background: #ffe0e0;
+  border-color: #e08080;
 }
 
 .preview-clear:disabled {

@@ -4,26 +4,121 @@ import PatientAnalysisForm from './PatientAnalysisForm';
 import ReportDisplay from './ReportDisplay';
 import { getHistory, deleteAnalysis } from '../api';
 
+// -- Transforms raw backend response into ReportDisplay format --
+function buildReportForDisplay(data) {
+  if (!data) return null;
+
+  // -- Agent 1 : Classifier (ensemble fusion) --
+  const classifierLabels = data.classifier_labels
+    || data.labels
+    || data.pathologies
+    || [];
+
+  // -- Agent 2 : MedGemma (confirmed labels + report) --
+  const confirmedLabels = data.confirmed_labels || classifierLabels;
+  const medicalReport   = data.medical_report || data.report || data.findings || '';
+
+  // -- Agent 3 : Mistral (detailed explanation) --
+  const mistralExplanation = data.mistral_explanation
+    || data.patient_report
+    || data.recommendations
+    || 'No Mistral explanation available for this analysis.';
+
+  // -- Agent 4 : CheXbert (verified final labels) --
+  const finalLabels     = data.final_labels || confirmedLabels;
+  const chexbertDetails = data.chexbert_details || {};
+
+  // -- Sections displayed in ReportDisplay --
+  const sections = [
+    {
+      title: 'Classifier Labels (Agent 1)',
+      content: classifierLabels.length
+        ? `Labels extracted by the CNN classifier (DenseNet + EfficientNet + ConvNeXt fusion):\n${classifierLabels.join(', ')}`
+        : 'No labels extracted.',
+    },
+    {
+      title: 'Confirmed Labels MedGemma (Agent 2)',
+      content: confirmedLabels.length
+        ? `Labels visually confirmed by MedGemma:\n${confirmedLabels.join(', ')}`
+        : 'No confirmed labels.',
+    },
+    {
+      title: 'MedGemma Report (Agent 2)',
+      content: medicalReport || 'No report generated.',
+    },
+    {
+      title: 'Patient Explanation (Agent 3)',
+      content: mistralExplanation,
+    },
+    {
+      title: 'CheXbert Labels (Agent 4)',
+      content: finalLabels.length
+        ? `Labels verified by CheXbert:\n${finalLabels.join(', ')}`
+        : 'No CheXbert labels.',
+    },
+  ];
+
+  return {
+    sections,
+
+    // Labels for LabelsSection
+    labelsClassifier: classifierLabels,
+    confirmedLabels:  confirmedLabels,
+    labelsFinal:      finalLabels,
+    chexbert_details: chexbertDetails,
+
+    // Normal status
+    is_normal: data.is_normal || false,
+
+    // Confidence score
+    confidence_score: data.confidence_score || null,
+
+    // Images
+    image_url: data.image_url || null,
+    xai_image: data.xai_url   || data.xai_image || null,
+    xai_url:   data.xai_url   || data.xai_image || null,
+
+    // Raw text for copy/download
+    raw_text: [
+      `=== CLASSIFIER LABELS ===\n${classifierLabels.join(', ')}`,
+      `\n=== CONFIRMED LABELS (MedGemma) ===\n${confirmedLabels.join(', ')}`,
+      `\n=== MEDGEMMA REPORT ===\n${medicalReport}`,
+      `\n=== PATIENT EXPLANATION (Mistral) ===\n${mistralExplanation}`,
+      `\n=== CHEXBERT LABELS ===\n${finalLabels.join(', ')}`,
+    ].join('\n'),
+
+    // Backward-compatible report fields
+    medical_report:      medicalReport,
+    mistral_explanation: mistralExplanation,
+    findings:            medicalReport,
+    recommendations:     mistralExplanation,
+    raw_report:          data.raw_report || '',
+
+    // ReportDisplay compatibility
+    pathologies: finalLabels,
+    impression:  data.impression || (data.is_normal ? 'Normal' : finalLabels.join(', ')),
+    xai_method:  'Grad-CAM',
+  };
+}
+
 function PatientWorkspace({ patient }) {
-  const [showUploader, setShowUploader] = useState(false);
-  const [patientHistory, setPatientHistory] = useState([]);
-  const [historyLoading, setHistoryLoading] = useState(true);
-  const [selectedReport, setSelectedReport] = useState(null);
-  const [report, setReport] = useState(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [activeTab, setActiveTab] = useState('report');
+  const [showUploader, setShowUploader]       = useState(false);
+  const [patientHistory, setPatientHistory]   = useState([]);
+  const [historyLoading, setHistoryLoading]   = useState(true);
+  const [selectedReport, setSelectedReport]   = useState(null);
+  const [report, setReport]                   = useState(null);
+  const [isAnalyzing, setIsAnalyzing]         = useState(false);
+  const [activeTab, setActiveTab]             = useState('report');
 
   const patientAge = patient.date_of_birth
     ? Math.max(0, new Date().getFullYear() - new Date(patient.date_of_birth).getFullYear())
     : null;
 
-  // Load patient's analysis history
   useEffect(() => {
     const loadHistory = async () => {
       setHistoryLoading(true);
       try {
         const allHistory = await getHistory();
-        // Filter for this patient only
         const patientAnalyses = (allHistory.results || []).filter(
           (analysis) => analysis.patient_id === patient.id
         );
@@ -32,7 +127,7 @@ function PatientWorkspace({ patient }) {
         if (patientAnalyses.length) {
           const latest = patientAnalyses[0];
           setSelectedReport(latest);
-          setReport(latest);
+          setReport(buildReportForDisplay(latest));
           setActiveTab('report');
         } else {
           setSelectedReport(null);
@@ -50,17 +145,16 @@ function PatientWorkspace({ patient }) {
   }, [patient.id]);
 
   const handleReportGenerated = (newReport) => {
-    // Add new report to history
     setPatientHistory((prev) => [newReport, ...prev]);
     setSelectedReport(newReport);
     setShowUploader(false);
-    setReport(newReport);
+    setReport(buildReportForDisplay(newReport));
     setActiveTab('report');
   };
 
   const handleSelectReport = (analysis) => {
     setSelectedReport(analysis);
-    setReport(analysis);
+    setReport(buildReportForDisplay(analysis));
     setActiveTab('report');
   };
 
@@ -69,9 +163,7 @@ function PatientWorkspace({ patient }) {
   };
 
   const handleDeleteReport = async (id) => {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce rapport?')) {
-      return;
-    }
+    if (!window.confirm('Are you sure you want to delete this report?')) return;
     try {
       await deleteAnalysis(id);
       setPatientHistory((prev) => prev.filter((r) => r.id !== id));
@@ -80,7 +172,7 @@ function PatientWorkspace({ patient }) {
         setReport(null);
       }
     } catch (err) {
-      alert('Erreur lors de la suppression: ' + err.message);
+      alert('Error during deletion: ' + err.message);
     }
   };
 
@@ -88,11 +180,13 @@ function PatientWorkspace({ patient }) {
     <div className="patient-workspace">
       <div className="workspace-hero">
         <div className="workspace-hero__main">
-          <span className="workspace-hero__eyebrow">Patient dossier</span>
+          <span className="workspace-hero__eyebrow">Patient file</span>
           <h2>{patient.full_name || 'Unknown patient'}</h2>
           <p>
-            {patient.medical_record_number ? `MRN ${patient.medical_record_number}` : 'Medical record number unavailable'}
-            {patientAge !== null ? ` • ${patientAge} years` : ''}
+            {patient.medical_record_number
+              ? `MRN ${patient.medical_record_number}`
+              : 'Record number not available'}
+            {patientAge !== null ? ` - ${patientAge} years old` : ''}
           </p>
         </div>
         <div className="workspace-hero__actions">
@@ -100,27 +194,23 @@ function PatientWorkspace({ patient }) {
             className="btn-add-report"
             onClick={() => setShowUploader(!showUploader)}
           >
-            {showUploader ? 'Fermer l’analyse' : '+ Ajouter un rapport'}
+            {showUploader ? "Close analysis" : '+ Add a report'}
           </button>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="workspace-content">
-        {/* Left Side: Report History */}
+        {/* Left : History */}
         <div className="content-left">
           <div className="history-section">
-            <h3>Historique clinique ({patientHistory.length})</h3>
+            <h3>Clinical history ({patientHistory.length})</h3>
             {historyLoading ? (
-              <div className="loading">Chargement...</div>
+              <div className="loading">Loading...</div>
             ) : patientHistory.length === 0 ? (
               <div className="empty-history">
-                <p>Aucun rapport enregistré pour ce patient.</p>
-                <button
-                  className="btn-first-report"
-                  onClick={() => setShowUploader(true)}
-                >
-                  Créer le premier rapport
+                <p>No reports recorded for this patient.</p>
+                <button className="btn-first-report" onClick={() => setShowUploader(true)}>
+                  Create the first report
                 </button>
               </div>
             ) : (
@@ -136,25 +226,20 @@ function PatientWorkspace({ patient }) {
                       <span>{new Date(analysis.date).toLocaleString()}</span>
                       <span>{Math.round(analysis.confidence_score || 0)}%</span>
                     </div>
-                    <p>{analysis.impression || 'Aucune impression'}</p>
+                    <p>{analysis.impression || 'No impression'}</p>
                     <div className="patient-report-item__actions">
                       <span>{(analysis.pathologies || []).join(', ') || 'Normal'}</span>
                       <span
                         role="button"
                         tabIndex={0}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteReport(analysis.id);
-                        }}
+                        onClick={(e) => { e.stopPropagation(); handleDeleteReport(analysis.id); }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleDeleteReport(analysis.id);
+                            e.preventDefault(); e.stopPropagation(); handleDeleteReport(analysis.id);
                           }
                         }}
                       >
-                        Supprimer
+                        Delete
                       </span>
                     </div>
                   </button>
@@ -164,12 +249,11 @@ function PatientWorkspace({ patient }) {
           </div>
         </div>
 
-        {/* Right Side: Report Display */}
+        {/* Right : Tabs + Report */}
         <div className="content-right">
-          <div className="workspace-tabs" role="tablist" aria-label="Patient dossier sections">
+          <div className="workspace-tabs" role="tablist" aria-label="Patient file sections">
             <button
-              type="button"
-              role="tab"
+              type="button" role="tab"
               aria-selected={activeTab === 'identity'}
               className={`workspace-tab ${activeTab === 'identity' ? 'workspace-tab--active' : ''}`}
               onClick={() => setActiveTab('identity')}
@@ -177,8 +261,7 @@ function PatientWorkspace({ patient }) {
               Identity
             </button>
             <button
-              type="button"
-              role="tab"
+              type="button" role="tab"
               aria-selected={activeTab === 'history'}
               className={`workspace-tab ${activeTab === 'history' ? 'workspace-tab--active' : ''}`}
               onClick={() => setActiveTab('history')}
@@ -186,8 +269,7 @@ function PatientWorkspace({ patient }) {
               History
             </button>
             <button
-              type="button"
-              role="tab"
+              type="button" role="tab"
               aria-selected={activeTab === 'report'}
               className={`workspace-tab ${activeTab === 'report' ? 'workspace-tab--active' : ''}`}
               onClick={() => setActiveTab('report')}
@@ -233,9 +315,9 @@ function PatientWorkspace({ patient }) {
           {activeTab === 'history' && (
             <div className="panel-card panel-card--history">
               {historyLoading ? (
-                <div className="loading">Chargement...</div>
+                <div className="loading">Loading...</div>
               ) : patientHistory.length === 0 ? (
-                <div className="tab-empty">No reports yet for this patient.</div>
+                <div className="tab-empty">No reports for this patient.</div>
               ) : (
                 <div className="patient-report-list">
                   {patientHistory.map((analysis) => (
@@ -249,7 +331,7 @@ function PatientWorkspace({ patient }) {
                         <span>{new Date(analysis.date).toLocaleString()}</span>
                         <span>{Math.round(analysis.confidence_score || 0)}%</span>
                       </div>
-                      <p>{analysis.impression || 'Aucune impression'}</p>
+                      <p>{analysis.impression || 'No impression'}</p>
                     </button>
                   ))}
                 </div>
@@ -259,25 +341,24 @@ function PatientWorkspace({ patient }) {
 
           {activeTab === 'report' && (
             <div className="panel-card">
-              <ReportDisplay report={report} isLoading={isAnalyzing} />
+              <ReportDisplay
+                report={report}
+                labels={report?.labelsClassifier || []}
+                isLoading={isAnalyzing}
+              />
             </div>
           )}
-
         </div>
       </div>
 
       {showUploader && (
-        <div className="uploader-modal" role="dialog" aria-modal="true" aria-label="Nouvelle analyse">
+        <div className="uploader-modal" role="dialog" aria-modal="true" aria-label="New analysis">
           <div className="uploader-modal__backdrop" onClick={() => setShowUploader(false)} />
           <div className="uploader-modal__content">
             <div className="uploader-modal__header">
-              <h3>Nouvelle analyse radiologique</h3>
-              <button
-                type="button"
-                className="uploader-modal__close"
-                onClick={() => setShowUploader(false)}
-              >
-                Fermer
+              <h3>New radiological analysis</h3>
+              <button type="button" className="uploader-modal__close" onClick={() => setShowUploader(false)}>
+                Close
               </button>
             </div>
             <PatientAnalysisForm

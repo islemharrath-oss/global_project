@@ -3,7 +3,7 @@
  * Handles authentication and secured backend requests.
  */
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE = '/api';
 const ACCESS_TOKEN_KEY = 'medvision_access_token';
 const REFRESH_TOKEN_KEY = 'medvision_refresh_token';
 
@@ -218,5 +218,54 @@ export async function deleteAnalysis(id) {
 export function getAPIBaseURL() {
   return API_BASE;
 }
+
+
+// ════════════════════════════════════════════════
+// ADMIN endpoints
+// ════════════════════════════════════════════════
+
+export async function adminGetDoctors() {
+  return apiFetch('/admin/doctors/', { method: 'GET' });
+}
+
+export async function adminGetPatients(doctorId) {
+  return apiFetch(`/admin/doctors/${doctorId}/patients/`, { method: 'GET' });
+}
+
+export async function adminDeleteUser(userId) {
+  return apiFetch(`/admin/users/${userId}/delete/`, { method: 'DELETE' });
+}
+
+// ════════════════════════════════════════════════
+// PATIENT endpoints
+// ════════════════════════════════════════════════
+
+export async function patientAnalyze(imageFile) {
+  if (!imageFile) {
+    throw new APIError('No image provided', 400, { error: 'No image' });
+  }
+  const formData = new FormData();
+  formData.append('image', imageFile);
+  return apiFetch('/patient/analyze/', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+// ════════════════════════════════════════════════
+// AUTH — login générique (doctor + patient + admin)
+// ════════════════════════════════════════════════
+
+export async function loginUser(username, password) {
+  const data = await apiFetch('/auth/token/', {
+    method: 'POST',
+    skipAuth: true,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: (username || '').trim(), password: password || '' }),
+  });
+  setAuthTokens(data.access, data.refresh);
+  return data;
+}
+
 
 export { APIError };

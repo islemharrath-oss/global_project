@@ -3,48 +3,56 @@ import './App.css';
 import Header from './components/Header';
 import AuthPage from './components/AuthPage';
 import PatientDashboard from './components/PatientDashboard';
+import AboutPage from './components/AboutPage';
+import AdminDashboard from './components/AdminDashboard';
+import PatientPortal from './components/PatientPortal';
+
 import {
   clearAuthTokens,
   getCurrentUser,
   getPatients,
   getStoredUserTokens,
-  loginDoctor,
+  loginUser,
   registerDoctor,
 } from './api';
 
 function App() {
-  const [activePage, setActivePage] = useState('dashboard');
+  const [activePage, setActivePage]   = useState('dashboard');
   const [authLoading, setAuthLoading] = useState(true);
-  const [authError, setAuthError] = useState('');
-  const [user, setUser] = useState(null);
-  const [patients, setPatients] = useState([]);
+  const [authError, setAuthError]     = useState('');
+  const [user, setUser]               = useState(null);
+  const [patients, setPatients]       = useState([]);
 
+  // ── Determine role ──────────────────────────────────────────────────────
+  const getRole = (u) => {
+    if (!u) return null;
+    if (u.is_staff || u.role === 'admin') return 'admin';
+    if (u.role === 'patient' || u.patient_profile) return 'patient';
+    if (u.role === 'doctor' || u.doctor_profile)   return 'doctor';
+    return 'doctor'; // fallback
+  };
+
+  const role = getRole(user);
+
+  // ── Load patients (doctor only) ─────────────────────────────────────────
   const loadPatients = async () => {
-    if (!user || user.role !== 'doctor') return;
     try {
       const data = await getPatients();
-      setPatients(data.results || []);
+      setPatients(Array.isArray(data) ? data : (data.results || []));
     } catch (err) {
       console.error('Patient fetch error:', err);
     }
   };
 
+  // ── Bootstrap session ────────────────────────────────────────────────────
   useEffect(() => {
     const bootstrap = async () => {
       const tokens = getStoredUserTokens();
-      if (!tokens.access) {
-        setAuthLoading(false);
-        return;
-      }
-
+      if (!tokens.access) { setAuthLoading(false); return; }
       try {
         const me = await getCurrentUser();
         setUser(me);
-        if (me.role === 'doctor') {
-          const data = await getPatients();
-          setPatients(data.results || []);
-          setActivePage('dashboard');
-        }
+        if (getRole(me) === 'doctor') await loadPatients();
       } catch (err) {
         console.error('Session restore failed:', err);
         clearAuthTokens();
@@ -52,23 +60,18 @@ function App() {
         setAuthLoading(false);
       }
     };
-
     bootstrap();
   }, []);
 
+  // ── Login ────────────────────────────────────────────────────────────────
   const handleLogin = async ({ username, password }) => {
     setAuthLoading(true);
     setAuthError('');
-    setUser(null);
-    setPatients([]);
     try {
-      await loginDoctor(username, password);
+      await loginUser(username, password);
       const me = await getCurrentUser();
       setUser(me);
-      if (me.role === 'doctor') {
-        const data = await getPatients();
-        setPatients(data.results || []);
-      }
+      if (getRole(me) === 'doctor') await loadPatients();
       setActivePage('dashboard');
     } catch (err) {
       setAuthError(err.message || 'Login failed');
@@ -77,16 +80,14 @@ function App() {
     }
   };
 
+  // ── Register (doctor only) ───────────────────────────────────────────────
   const handleRegister = async (payload) => {
     setAuthLoading(true);
     setAuthError('');
-    setUser(null);
-    setPatients([]);
     try {
       const data = await registerDoctor(payload);
-      setUser(data.user);
-      const patientData = await getPatients();
-      setPatients(patientData.results || []);
+      setUser(data.user || null);
+      await loadPatients();
       setActivePage('dashboard');
     } catch (err) {
       setAuthError(err.message || 'Registration failed');
@@ -95,31 +96,28 @@ function App() {
     }
   };
 
+  // ── Logout ───────────────────────────────────────────────────────────────
   const handleLogout = () => {
     clearAuthTokens();
     setUser(null);
     setPatients([]);
-    setAuthError('');
     setActivePage('dashboard');
   };
 
-  const handlePatientCreated = async () => {
-    await loadPatients();
-  };
+  const handlePatientCreated = async () => { await loadPatients(); };
 
+  // ── Loading screen ───────────────────────────────────────────────────────
   if (authLoading) {
     return (
       <div className="auth-shell">
         <div className="auth-card">
-          <div className="auth-hero">
-            <h1>Loading MedVision...</h1>
-            <p>Restoring your secure doctor session.</p>
-          </div>
+          <h2>Loading MedVision...</h2>
         </div>
       </div>
     );
   }
 
+  // ── Not logged in ────────────────────────────────────────────────────────
   if (!user) {
     return (
       <AuthPage
@@ -131,6 +129,27 @@ function App() {
     );
   }
 
+  // ── ADMIN interface ──────────────────────────────────────────────────────
+  if (role === 'admin') {
+    return (
+      <AdminDashboard
+        user={user}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  // ── PATIENT interface ────────────────────────────────────────────────────
+  if (role === 'patient') {
+    return (
+      <PatientPortal
+        user={user}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  // ── DOCTOR interface (default) ───────────────────────────────────────────
   return (
     <div className="app">
       <Header
@@ -140,42 +159,15 @@ function App() {
         onLogout={handleLogout}
       />
 
-      <main className={`main ${activePage === 'dashboard' ? 'main--dashboard' : ''}`}>
-        {activePage === 'dashboard' && user?.role === 'doctor' && (
+      <main className="main main--dashboard">
+        {activePage === 'dashboard' && (
           <PatientDashboard
             patients={patients}
             onPatientCreated={handlePatientCreated}
             user={user}
           />
         )}
-
-        {activePage === 'about' && (
-          <div className="page-about">
-            <div className="about-card">
-              <h2 className="about-title">
-                <span className="title-accent">⚕</span> MedVision Doctor Portal
-              </h2>
-              <p className="about-desc">
-                Patient-first radiology workspace: choose or create a patient first, then create
-                and review reports for that patient.
-              </p>
-              <div className="about-stack">
-                {[
-                  'Doctor accounts',
-                  'Patient accounts',
-                  'JWT authentication',
-                  'Validated reports',
-                  'PostgreSQL database',
-                ].map((item) => (
-                  <span key={item} className="stack-badge">{item}</span>
-                ))}
-              </div>
-              <p className="about-disclaimer">
-                ⚠️ This system is an aid-to-diagnosis tool only and does not replace a licensed physician.
-              </p>
-            </div>
-          </div>
-        )}
+        {activePage === 'about' && <AboutPage />}
       </main>
     </div>
   );

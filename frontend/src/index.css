@@ -1,4 +1,4 @@
-/* ===== RESET & BASE ===== */
+﻿/* ===== RESET & BASE ===== */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -12,8 +12,8 @@ html {
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #080d1a;
-  color: #e0f5f3;
+  background-color: transparent;
+  
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -40,7 +40,7 @@ body {
 /* ===== SELECTION ===== */
 ::selection {
   background: rgba(0, 200, 180, 0.25);
-  color: #e0f5f3;
+  
 }
 
 /* ===== LINKS ===== */

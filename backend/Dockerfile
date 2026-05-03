@@ -10,13 +10,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Create virtual environment
+# 🔥 Create virtual environment AVANT installation
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Copy requirements and install dependencies
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# 🔥 Installer PyTorch dans le venv (FIX PRINCIPAL)
+RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# Copy requirements
 COPY requirements.txt .
+
+# Installer les dépendances
 RUN pip install --no-cache-dir -r requirements.txt
+
 
 # Production stage
 FROM python:3.11-slim

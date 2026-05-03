@@ -1,0 +1,152 @@
+.about-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+  color: #e2e8f0;
+}
+
+/* ── Hero ─────────────────────────────────────────── */
+.about-hero {
+  text-align: center;
+  padding: 4rem 2rem 3rem;
+}
+
+.about-hero__badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #00c8b0;
+  border: 1px solid #00c8b033;
+  background: #00c8b011;
+  padding: 0.3rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1.5rem;
+}
+
+.about-hero__title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: #f0f6ff;
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.about-hero__accent {
+  color: #00c8b0;
+}
+
+.about-hero__desc {
+  max-width: 620px;
+  margin: 0 auto;
+  color: #94a3b8;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/* ── Sections ─────────────────────────────────────── */
+.about-section {
+  margin-top: 4.5rem;
+}
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #00c8b0;
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #f0f6ff;
+  margin: 0 0 1rem;
+}
+
+.section-text {
+  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1.8;
+  max-width: 720px;
+  margin: 0 0 2.5rem;
+}
+
+/* ── Cards ────────────────────────────────────────── */
+.about-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.about-card {
+  background: #0f1923;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.about-card:hover {
+  border-color: #00c8b044;
+  transform: translateY(-2px);
+}
+
+.about-card__icon {
+  font-size: 1.75rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.about-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f0f6ff;
+  margin: 0 0 0.5rem;
+}
+
+.about-card p {
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Disclaimer ───────────────────────────────────── */
+.about-disclaimer {
+  margin-top: 4.5rem;
+  background: #0f1923;
+  border: 1px solid #1e2d3d;
+  border-left: 3px solid #00c8b0;
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.disclaimer-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.about-disclaimer p {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.about-disclaimer strong {
+  color: #f0f6ff;
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 600px) {
+  .about-page { padding: 2rem 1rem 4rem; }
+  .about-hero { padding: 2rem 1rem; }
+  .about-cards { grid-template-columns: 1fr; }
+}

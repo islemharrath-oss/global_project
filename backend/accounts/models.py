@@ -2,7 +2,18 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
+# Ajouter après les imports
+class UserRole(models.TextChoices):
+    ADMIN   = 'admin',   'Admin'
+    DOCTOR  = 'doctor',  'Doctor'
+    PATIENT = 'patient', 'Patient'
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=10, choices=UserRole.choices, default=UserRole.DOCTOR)
+
+    def __str__(self):
+        return f"{self.user.username} ({self.role})"
 class DoctorProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="doctor_profile")
     specialty = models.CharField(max_length=120)

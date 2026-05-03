@@ -51,14 +51,14 @@ function PatientDashboard({ patients, onPatientCreated }) {
       <div className="patient-dashboard">
         <div className="dashboard-header">
           <div>
-            <h1>Nouveau dossier patient</h1>
-            <p>Créer un patient relié au compte médecin.</p>
+            <h1>New patient file</h1>
+            <p>Create a patient linked to the doctor account.</p>
           </div>
           <button
             className="btn-back"
             onClick={() => setShowCreator(false)}
           >
-            ← Retour aux dossiers
+            ← Back to files
           </button>
         </div>
         <div className="creator-container">
@@ -75,25 +75,25 @@ function PatientDashboard({ patients, onPatientCreated }) {
         <div className={`patients-sidebar ${!isSidebarOpen ? 'patients-sidebar--collapsed' : ''}`}>
           <div className="sidebar-header">
             <div className="sidebar-header__copy">
-              <span className="sidebar-kicker">Dossiers patients</span>
+              <span className="sidebar-kicker">Patient files</span>
               <h2>{patients.length} patient{patients.length > 1 ? 's' : ''}</h2>
             </div>
             <button
               className="btn-new-patient"
               onClick={() => setShowCreator(true)}
             >
-              + Ajouter patient
+              + Add patient
             </button>
           </div>
 
           {patients.length === 0 ? (
             <div className="no-patients">
-              <p>Aucun dossier patient disponible.</p>
+              <p>No patient files available.</p>
               <button
                 className="btn-create-first"
                 onClick={() => setShowCreator(true)}
               >
-                Créer un patient
+                Create a patient
               </button>
             </div>
           ) : (
@@ -132,7 +132,7 @@ function PatientDashboard({ patients, onPatientCreated }) {
               className="btn-show-patients"
               onClick={() => setIsSidebarOpen((prev) => !prev)}
             >
-              {isSidebarOpen ? 'Masquer les patients' : 'Afficher les patients'}
+              {isSidebarOpen ? 'Hide patients' : 'Show patients'}
             </button>
           </div>
 
@@ -143,8 +143,8 @@ function PatientDashboard({ patients, onPatientCreated }) {
           ) : (
             <div className="empty-workspace">
               <div className="empty-workspace__card">
-                <span className="empty-workspace__label">Dossier patient</span>
-                <p>Sélectionnez un patient pour afficher son identité, son historique et ses rapports.</p>
+                <span className="empty-workspace__label">Patient file</span>
+                <p>Select a patient to view their profile, history and reports.</p>
               </div>
             </div>
           )}

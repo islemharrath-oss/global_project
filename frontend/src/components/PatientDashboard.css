@@ -3,9 +3,10 @@
   flex-direction: column;
   min-height: calc(100vh - 92px);
   border-radius: 20px;
-  border: 1px solid rgba(0, 200, 180, 0.14);
-  background: linear-gradient(155deg, rgba(11, 17, 31, 0.86), rgba(7, 12, 22, 0.88));
+  border: 1px solid #c8e9e7;
+  background: linear-gradient(155deg, #f7fdfc, #edf9f8);
   overflow: hidden;
+  box-shadow: 0 2px 16px rgba(14, 165, 160, 0.07);
 }
 
 .dashboard-header {
@@ -13,37 +14,38 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 22px 28px 18px;
-  background: rgba(0, 200, 180, 0.04);
-  border-bottom: 1px solid rgba(0, 200, 180, 0.14);
+  background: rgba(14, 165, 160, 0.04);
+  border-bottom: 1px solid #dff0ef;
   gap: 1rem;
 }
 
 .dashboard-header h1 {
   margin: 0;
   font-size: 1.6rem;
-  color: #dffffa;
+  color: #0d3b39;
 }
 
 .dashboard-header p {
   margin-top: 0.35rem;
-  color: rgba(195, 230, 227, 0.66);
+  color: #4a8a88;
   font-size: 0.92rem;
 }
 
 .btn-back {
   padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(0, 200, 180, 0.2);
+  background: #f7fdfc;
+  border: 1px solid #9fd9d6;
   border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
-  color: #d6f5f2;
+  color: #2d5a58;
   transition: all 0.2s;
 }
 
 .btn-back:hover {
-  background: rgba(0, 200, 180, 0.1);
-  color: #00c8b4;
+  background: #e6f7f6;
+  color: #0a7a75;
+  border-color: #0ea5a0;
 }
 
 .creator-container {
@@ -61,16 +63,15 @@
 /* Left Sidebar */
 .patients-sidebar {
   width: clamp(240px, 22vw, 320px);
-  background: rgba(7, 12, 22, 0.74);
-  border-right: 1px solid rgba(0, 200, 180, 0.14);
+  background: #f0faf9;
+  border-right: 1px solid #dff0ef;
   display: flex;
   flex-direction: column;
-  box-shadow: inset -1px 0 0 rgba(0, 200, 180, 0.08);
 }
 
 .sidebar-header {
   padding: 20px;
-  border-bottom: 1px solid rgba(0, 200, 180, 0.12);
+  border-bottom: 1px solid #dff0ef;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -86,19 +87,19 @@
   font-size: 0.72rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(0, 200, 180, 0.75);
+  color: #0ea5a0;
 }
 
 .sidebar-header h2 {
   margin: 0;
   font-size: 1.15rem;
-  color: #dffffa;
+  color: #0d3b39;
 }
 
 .btn-new-patient {
   padding: 10px 14px;
-  background: linear-gradient(135deg, #00c8b4, #0cd3c0);
-  color: #022a29;
+  background: linear-gradient(135deg, #0ea5a0, #17c1bb);
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -108,12 +109,11 @@
 }
 
 .btn-new-patient:hover {
-  background: linear-gradient(135deg, #13d9c6, #54e8d8);
+  background: linear-gradient(135deg, #0a7a75, #0ea5a0);
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0, 200, 180, 0.26);
+  box-shadow: 0 6px 16px rgba(14, 165, 160, 0.22);
 }
 
-/* Patients List */
 .patients-list {
   flex: 1;
   overflow-y: auto;
@@ -123,8 +123,8 @@
 .patient-item {
   padding: 14px 14px 14px 56px;
   margin-bottom: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(0, 200, 180, 0.08);
+  background: #ffffff;
+  border: 1px solid #dff0ef;
   cursor: pointer;
   border-radius: 14px;
   transition: all 0.2s;
@@ -132,14 +132,15 @@
 }
 
 .patient-item:hover {
-  background: rgba(0, 200, 180, 0.08);
-  border-color: rgba(0, 200, 180, 0.35);
+  background: #e6f7f6;
+  border-color: #9fd9d6;
   transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(14, 165, 160, 0.08);
 }
 
 .patient-item.active {
-  background: rgba(0, 200, 180, 0.14);
-  border-color: rgba(0, 200, 180, 0.7);
+  background: #d0f0ee;
+  border-color: #0ea5a0;
   font-weight: 600;
 }
 
@@ -153,29 +154,29 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 200, 180, 0.12);
-  border: 1px solid rgba(0, 200, 180, 0.24);
-  color: #00c8b4;
+  background: #e6f7f6;
+  border: 1px solid #9fd9d6;
+  color: #0a7a75;
   font-weight: 700;
   font-size: 0.85rem;
 }
 
 .patient-name {
   font-weight: 600;
-  color: #e9fffd;
+  color: #0d3b39;
   margin-bottom: 5px;
   font-size: 1rem;
 }
 
 .patient-mrn {
   font-size: 0.78rem;
-  color: rgba(195, 230, 227, 0.74);
+  color: #3d6a68;
   margin-bottom: 2px;
 }
 
 .patient-dob {
   font-size: 0.78rem;
-  color: rgba(195, 230, 227, 0.54);
+  color: #6aacaa;
 }
 
 .no-patients {
@@ -189,23 +190,24 @@
 }
 
 .no-patients p {
-  color: rgba(195, 230, 227, 0.6);
+  color: #4a8a88;
   margin-bottom: 16px;
 }
 
 .btn-create-first {
   padding: 10px 20px;
-  background: linear-gradient(135deg, #00c8b4, #0cd3c0);
-  color: #022a29;
+  background: linear-gradient(135deg, #0ea5a0, #17c1bb);
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
+  transition: all 0.2s;
 }
 
 .btn-create-first:hover {
-  background: linear-gradient(135deg, #13d9c6, #54e8d8);
+  background: linear-gradient(135deg, #0a7a75, #0ea5a0);
 }
 
 /* Right Workspace Area */
@@ -215,6 +217,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  background: #fafffe;
 }
 
 .workspace-toolbar {
@@ -223,18 +226,19 @@
 }
 
 .btn-show-patients {
-  border: 1px solid rgba(0, 200, 180, 0.34);
-  background: rgba(0, 200, 180, 0.08);
-  color: #9ff7ed;
+  border: 1px solid #9fd9d6;
+  background: #e6f7f6;
+  color: #0a7a75;
   border-radius: 10px;
   padding: 8px 12px;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .btn-show-patients:hover {
-  background: rgba(0, 200, 180, 0.16);
+  background: #d0f0ee;
 }
 
 .empty-workspace {
@@ -250,69 +254,37 @@
   width: 100%;
   padding: 1.6rem;
   border-radius: 18px;
-  border: 1px solid rgba(0, 200, 180, 0.16);
-  background: rgba(0, 200, 180, 0.04);
+  border: 1px solid #dff0ef;
+  background: #f7fdfc;
   text-align: center;
 }
 
 .empty-workspace__label {
   display: inline-block;
   margin-bottom: 0.75rem;
-  color: rgba(0, 200, 180, 0.8);
+  color: #0ea5a0;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-size: 0.72rem;
 }
 
 .empty-workspace__card p {
-  color: rgba(195, 230, 227, 0.74);
+  color: #4a8a88;
   font-size: 0.95rem;
   line-height: 1.7;
 }
 
-/* Scrollbar styling */
-.patients-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.patients-list::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.patients-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 200, 180, 0.32);
-  border-radius: 3px;
-}
-
-.patients-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 200, 180, 0.5);
-}
+/* Scrollbar */
+.patients-list::-webkit-scrollbar { width: 6px; }
+.patients-list::-webkit-scrollbar-track { background: #f0faf9; }
+.patients-list::-webkit-scrollbar-thumb { background: #9fd9d6; border-radius: 3px; }
+.patients-list::-webkit-scrollbar-thumb:hover { background: #0ea5a0; }
 
 @media (max-width: 900px) {
-  .dashboard-container {
-    flex-direction: column;
-  }
-
-  .dashboard-container--sidebar-collapsed .patients-sidebar {
-    display: none;
-  }
-
-  .patients-sidebar {
-    width: 100%;
-    max-height: 36vh;
-    border-right: none;
-    border-bottom: 1px solid rgba(0, 200, 180, 0.14);
-  }
-
-  .workspace-toolbar {
-    display: block;
-  }
-
-  .dashboard-header {
-    padding: 18px 18px 14px;
-  }
-
-  .dashboard-header h1 {
-    font-size: 1.3rem;
-  }
+  .dashboard-container { flex-direction: column; }
+  .dashboard-container--sidebar-collapsed .patients-sidebar { display: none; }
+  .patients-sidebar { width: 100%; max-height: 36vh; border-right: none; border-bottom: 1px solid #dff0ef; }
+  .workspace-toolbar { display: block; }
+  .dashboard-header { padding: 18px 18px 14px; }
+  .dashboard-header h1 { font-size: 1.3rem; }
 }

@@ -1,4 +1,4 @@
-# Frontend Dockerfile for MedVision
+﻿# Frontend Dockerfile for MedVision
 
 # Build stage
 FROM node:18-alpine AS builder
@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -38,3 +38,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
+

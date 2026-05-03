@@ -1,10 +1,9 @@
-
 import React from "react";
 import "./AnalyzeButton.css";
 
 /**
- * AnalyzeButton — bouton principal qui déclenche l'analyse
- * via l'API Django backend → MedGemma → XAI pipeline.
+ * AnalyzeButton — main button that triggers the analysis
+ * via the Django backend API → MedGemma → XAI pipeline.
  */
 function AnalyzeButton({ onAnalyze, isLoading, hasImage }) {
   return (
@@ -17,24 +16,24 @@ function AnalyzeButton({ onAnalyze, isLoading, hasImage }) {
         {isLoading ? (
           <>
             <span className="btn-spinner" />
-            <span>Analyse en cours...</span>
+            <span>Analysis in progress...</span>
           </>
         ) : (
           <>
             <span className="btn-icon">🧠</span>
-            <span>Analyser avec MedGemma</span>
+            <span>Analyze</span>
             <span className="btn-arrow">→</span>
           </>
         )}
       </button>
 
       {!hasImage && !isLoading && (
-        <p className="analyze-hint">Chargez une image pour démarrer l'analyse</p>
+        <p className="analyze-hint">Upload an image to start the analysis</p>
       )}
 
       {isLoading && (
         <p className="analyze-hint analyze-hint--active">
-          MedGemma analyse la radiographie... cela peut prendre 10 à 30 secondes
+          Analyzing the radiograph... this may take 10 to 30 seconds
         </p>
       )}
     </div>

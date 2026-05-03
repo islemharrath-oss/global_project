@@ -35,10 +35,10 @@ class PatientProfileSerializer(serializers.ModelSerializer):
         return obj.full_name
 
 
-class AuthUserSerializer(serializers.ModelSerializer):
+class AuthUserSerializer(serializers.ModelSerializer):        
     role = serializers.SerializerMethodField()
-    doctor_profile = serializers.SerializerMethodField()
-    patient_profile = serializers.SerializerMethodField()
+    doctor_profile = serializers.SerializerMethodField()      
+    patient_profile = serializers.SerializerMethodField()     
 
     class Meta:
         model = User
@@ -48,12 +48,15 @@ class AuthUserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "email",
+            "is_staff",        # ← ajouté
             "role",
             "doctor_profile",
             "patient_profile",
         ]
 
     def get_role(self, user):
+        if user.is_staff:              # ← admin EN PREMIER
+            return "admin"
         if hasattr(user, "doctor_profile"):
             return "doctor"
         if hasattr(user, "patient_profile"):
@@ -69,8 +72,6 @@ class AuthUserSerializer(serializers.ModelSerializer):
         if hasattr(user, "patient_profile"):
             return PatientProfileSerializer(user.patient_profile).data
         return None
-
-
 class DoctorRegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
     email = serializers.EmailField()

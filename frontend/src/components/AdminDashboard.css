@@ -1,0 +1,428 @@
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Lora:wght@600;700&display=swap');
+
+/* ── Layout ─────────────────────────────────────── */
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f9f9;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Sidebar ─────────────────────────────────────── */
+.admin-sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: #4ca5a2;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.admin-brand-icon {
+  font-size: 1.6rem;
+}
+
+.admin-brand-title {
+  font-family: 'Lora', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e6f5f4;
+  margin: 0;
+}
+
+.admin-brand-sub {
+  font-size: 0.65rem;
+  color: #6aacaa;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.admin-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.admin-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #034c49;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.admin-profile-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e6f5f4;
+  margin: 0;
+}
+
+.admin-profile-role {
+  font-size: 0.68rem;
+  color: #6aacaa;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.admin-nav { display: flex; flex-direction: column; gap: 0.4rem; flex: 1; }
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  color: #94b8b6;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  text-align: left;
+}
+
+.admin-nav-item:hover { background: rgba(255,255,255,0.06); color: #e6f5f4; }
+.admin-nav-item--active { background: rgba(10,140,135,0.25); color: #e6f5f4; }
+
+.admin-logout {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: #94b8b6;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  text-align: left;
+}
+
+.admin-logout:hover { background: rgba(217,79,79,0.15); border-color: #d94f4f; color: #d94f4f; }
+
+/* ── Main ─────────────────────────────────────────── */
+.admin-main {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.admin-title {
+  font-family: 'Lora', serif;
+  font-size: 1.6rem;
+  color: #1a2e2d;
+  margin: 0 0 0.25rem;
+}
+
+.admin-subtitle { font-size: 0.85rem; color: #7a9b99; margin: 0; }
+
+.admin-refresh {
+  background: white;
+  border: 1px solid #daeae9;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font-size: 0.82rem;
+  color: #3d5c5a;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+
+.admin-refresh:hover { border-color: #0a8c87; color: #0a8c87; background: #e6f5f4; }
+
+/* ── Stats ────────────────────────────────────────── */
+.admin-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.admin-stat {
+  flex: 1;
+  background: white;
+  border: 1px solid #daeae9;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: 0 2px 8px rgba(10,140,135,0.06);
+}
+
+.admin-stat-value {
+  font-family: 'Lora', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0a8c87;
+}
+
+.admin-stat-label { font-size: 0.78rem; color: #7a9b99; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* ── Search ───────────────────────────────────────── */
+.admin-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-search-icon {
+  position: absolute;
+  left: 0.9rem;
+  font-size: 0.9rem;
+}
+
+.admin-search {
+  width: 100%;
+  padding: 0.7rem 1rem 0.7rem 2.5rem;
+  border: 1px solid #daeae9;
+  border-radius: 10px;
+  background: white;
+  font-size: 0.88rem;
+  color: #1a2e2d;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.18s;
+}
+
+.admin-search:focus { border-color: #0a8c87; }
+
+/* ── Error / Loading / Empty ──────────────────────── */
+.admin-error {
+  background: #fdf0f0;
+  border: 1px solid rgba(217,79,79,0.3);
+  border-radius: 10px;
+  padding: 0.9rem 1.2rem;
+  color: #d94f4f;
+  font-size: 0.88rem;
+}
+
+.admin-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
+  color: #7a9b99;
+}
+
+.admin-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #daeae9;
+  border-top-color: #0a8c87;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.admin-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem;
+  color: #7a9b99;
+  font-size: 0.9rem;
+}
+
+.admin-empty span { font-size: 2.5rem; opacity: 0.4; }
+
+/* ── Doctor Card ──────────────────────────────────── */
+.admin-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.admin-doctor-card {
+  background: white;
+  border: 1px solid #daeae9;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(10,140,135,0.05);
+  transition: box-shadow 0.18s;
+}
+
+.admin-doctor-card:hover { box-shadow: 0 4px 16px rgba(10,140,135,0.1); }
+
+.admin-doctor-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.admin-doctor-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e6f5f4;
+  border: 2px solid #b2dbd9;
+  color: #0a8c87;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.admin-doctor-info { flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
+
+.admin-doctor-name {
+  font-family: 'Lora', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a2e2d;
+  margin: 0;
+}
+
+.admin-doctor-meta { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0; }
+
+.admin-doctor-sub { font-size: 0.76rem; color: #7a9b99; margin: 0; }
+
+.admin-badge {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 600;
+}
+
+.admin-badge--teal { background: #e6f5f4; color: #0a8c87; border: 1px solid #b2dbd9; }
+.admin-badge--gray { background: #f4f6f8; color: #3d5c5a; border: 1px solid #daeae9; }
+
+.admin-doctor-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.admin-patient-count {
+  font-size: 0.78rem;
+  color: #7a9b99;
+  white-space: nowrap;
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+.admin-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.admin-btn--ghost {
+  background: white;
+  border-color: #daeae9;
+  color: #3d5c5a;
+}
+
+.admin-btn--ghost:hover { border-color: #0a8c87; color: #0a8c87; background: #e6f5f4; }
+
+.admin-btn--danger {
+  background: #fdf0f0;
+  border-color: rgba(217,79,79,0.3);
+  color: #d94f4f;
+}
+
+.admin-btn--danger:hover { background: #d94f4f; color: white; border-color: #d94f4f; }
+.admin-btn--danger:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.admin-btn--sm { padding: 4px 10px; font-size: 0.72rem; }
+
+/* ── Patients Section ─────────────────────────────── */
+.admin-patients {
+  border-top: 1px solid #f0f7f6;
+  padding: 1.25rem 1.5rem;
+  background: #f9fdfd;
+}
+
+.admin-patients-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #7a9b99;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 1rem;
+}
+
+.admin-patients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-patient-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  border: 1px solid #daeae9;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  transition: border-color 0.18s;
+}
+
+.admin-patient-card:hover { border-color: #b2dbd9; }
+
+.admin-patient-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fdf6e3;
+  border: 2px solid rgba(196,127,23,0.25);
+  color: #c47f17;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.admin-patient-info { flex: 1; }
+.admin-patient-name { font-size: 0.88rem; font-weight: 600; color: #1a2e2d; margin: 0; }
+.admin-patient-mrn  { font-size: 0.73rem; color: #7a9b99; margin: 0; }
+.admin-patient-dob  { font-size: 0.73rem; color: #7a9b99; margin: 0; }
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 768px) {
+  .admin-shell { flex-direction: column; }
+  .admin-sidebar { width: 100%; min-height: auto; flex-direction: row; flex-wrap: wrap; }
+  .admin-stats { flex-direction: column; }
+  .admin-doctor-row { flex-wrap: wrap; }
+}
