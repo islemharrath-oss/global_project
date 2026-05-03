@@ -1,0 +1,80 @@
+{
+  "image": "image3.jpg",
+  "classifier_labels": [
+    "Atelectasis",
+    "Cardiomegaly",
+    "Lung Opacity",
+    "Pleural Effusion"
+  ],
+  "is_normal": false,
+  "classifier_details": {
+    "Atelectasis": {
+      "prob": 0.6092,
+      "pred": true
+    },
+    "Cardiomegaly": {
+      "prob": 0.6483,
+      "pred": true
+    },
+    "Consolidation": {
+      "prob": 0.446,
+      "pred": false
+    },
+    "Edema": {
+      "prob": 0.5863,
+      "pred": false
+    },
+    "Enlarged Cardiomediastinum": {
+      "prob": 0.4749,
+      "pred": false
+    },
+    "Fracture": {
+      "prob": 0.4633,
+      "pred": false
+    },
+    "Lung Lesion": {
+      "prob": 0.4591,
+      "pred": false
+    },
+    "Lung Opacity": {
+      "prob": 0.5854,
+      "pred": true
+    },
+    "No Finding": {
+      "prob": 0.45,
+      "pred": false
+    },
+    "Pleural Effusion": {
+      "prob": 0.7472,
+      "pred": true
+    },
+    "Pleural Other": {
+      "prob": 0.4606,
+      "pred": false
+    },
+    "Pneumonia": {
+      "prob": 0.4992,
+      "pred": false
+    },
+    "Pneumothorax": {
+      "prob": 0.4053,
+      "pred": false
+    },
+    "Support Devices": {
+      "prob": 0.4475,
+      "pred": false
+    }
+  },
+  "confirmed_labels": [
+    "Cardiomegaly",
+    "Lung Opacity"
+  ],
+  "medical_report": "Okay, I will review the chest X-ray provided and evaluate the CNN predictions.\n\nThe image shows a PA view of the chest. The heart appears enlarged, which could suggest cardiomegaly. There is some increased opacity in the lower lung fields, potentially representing atelectasis or other infiltrates. A small pleural effusion cannot be ruled out given the blunting of the costophrenic angles.\n\nFINDINGS: Cardiomegaly, possible atelectasis/opacity in the lower lungs, possible small pleural effusion.\n\nIMPRESSION: Cardiomegaly; consider further evaluation for underlying cause.\n\nCONFIRMED: ['Cardiomegaly', 'Lung Opacity']",
+  "mistral_explanation": "The radiologist has looked at your chest X-ray and found a few things that might be concerning. Firstly, your heart appears to be larger than it should be, which could be a sign of cardiomegaly. This doesn't necessarily mean anything is wrong with your heart, but it's worth keeping an eye on.\n\nSecondly, there is some cloudiness in the lower part of your lungs, which could be caused by fluid or other issues. This is called lung opacity. Again, this doesn't necessarily mean anything is seriously wrong, but it's worth getting checked out.\n\nFinally, there might be a small amount of fluid around your lungs, which could be a sign of a pleural effusion. This is just a small amount of fluid, but it's worth keeping an eye on.\n\nCLINICAL FINDINGS: Cardiomegaly, Lung Opacity",
+  "final_labels": [
+    "Cardiomegaly",
+    "Lung Opacity"
+  ],
+  "chexbert_details": null,
+  "extra_labels_not_validated": []
+}
