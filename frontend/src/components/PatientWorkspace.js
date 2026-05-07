@@ -224,7 +224,6 @@ function PatientWorkspace({ patient }) {
                   >
                     <div className="patient-report-item__top">
                       <span>{new Date(analysis.date).toLocaleString()}</span>
-                      <span>{Math.round(analysis.confidence_score || 0)}%</span>
                     </div>
                     <p>{analysis.impression || 'No impression'}</p>
                     <div className="patient-report-item__actions">
@@ -329,7 +328,6 @@ function PatientWorkspace({ patient }) {
                     >
                       <div className="patient-report-item__top">
                         <span>{new Date(analysis.date).toLocaleString()}</span>
-                        <span>{Math.round(analysis.confidence_score || 0)}%</span>
                       </div>
                       <p>{analysis.impression || 'No impression'}</p>
                     </button>
@@ -345,6 +343,7 @@ function PatientWorkspace({ patient }) {
                 report={report}
                 labels={report?.labelsClassifier || []}
                 isLoading={isAnalyzing}
+                patientName={patient.full_name}
               />
             </div>
           )}

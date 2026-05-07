@@ -1,11 +1,11 @@
-﻿# LangGraph/main.py
+# LangGraph/main.py
 import json
 import os
 from graph.pipeline import pipeline
 
 # ── Chemins des modèles ─────────────────────────────────────────────────────
 MEDGEMMA_MODEL_PATH = os.getenv("MEDGEMMA_MODEL_PATH", "./models/medgemma-mimic-lora-final")
-MISTRAL_MODEL_PATH  = os.getenv("MISTRAL_MODEL_PATH",  r"C:\Users\user\.cache\mistral\mistral-7b-instruct-v0.1.Q4_K_M.gguf")
+MISTRAL_MODEL_PATH  = os.getenv("MISTRAL_MODEL_PATH",  r"C:\Users\amine\Desktop\PCD\global_project\LangGraph\models\mistral\mistral-7b-instruct-v0.1.Q4_K_M.gguf")
 
 
 def run_pipeline(image_path: str) -> dict:
@@ -57,6 +57,7 @@ def run_pipeline(image_path: str) -> dict:
         "classifier_labels":            result.get("labels"),
         "is_normal":                    result.get("is_normal"),
         "classifier_details":           result.get("classifier_details", {}),
+        "confidence_score":             result.get("confidence_score", 0),
 
         # ── Agent 2 : MedGemma ──────────────────────────────────────────
         "confirmed_labels":             result.get("confirmed_labels"),

@@ -60,6 +60,9 @@ REST_FRAMEWORK = {
 }
 
 AI_SERVICE_URL = config("AI_SERVICE_URL", default="http://localhost:9000")
+if AI_SERVICE_URL == "http://ai-service:9000":
+    AI_SERVICE_URL = "http://127.0.0.1:9000"
+
 AI_SERVICE_TIMEOUT = config("AI_SERVICE_TIMEOUT", default=1800, cast=int)
 AI_FALLBACK_TO_MOCK = config("AI_FALLBACK_TO_MOCK", default=True, cast=bool)
 

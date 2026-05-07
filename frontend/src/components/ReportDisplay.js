@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import XAIViewer from "./XAIViewer";
 import "./ReportDisplay.css";
 
@@ -205,14 +205,12 @@ function isTechnicalSection(title = "") {
   return TECHNICAL_SECTION_PATTERNS.some(re => re.test(title));
 }
 
-function ReportTab({ report }) {
+function ReportTab({ report, patientName }) {
   const [copied, setCopied] = useState(false);
   const allSections         = report?.sections || [];
   const sections            = allSections.filter(s => !isTechnicalSection(s.title));
 
-  // ── 1. Rapport MedGemma ───────────────────────────────────────────────────
   const reportSections = [];
-
   if (sections.length > 0) {
     reportSections.push(...sections);
   } else if (report.medical_report || report.findings) {
@@ -222,24 +220,9 @@ function ReportTab({ report }) {
     });
   }
 
-  // ── 2. Explication Mistral — toujours affichée en dessous ─────────────────
-  const mistralText =
-    report.mistral_explanation ||
-    report.patient_report      ||
-    report.recommendations     ||
-    "";
-
+  const mistralText = report.mistral_explanation || report.patient_report || report.recommendations || "";
   if (mistralText) {
-    reportSections.push({
-      title:     "Patient Explanation",
-      content:   mistralText,
-      highlight: true, // ← légère mise en valeur visuelle
-    });
-  }
-
-  // ── 3. Fallback ultime ────────────────────────────────────────────────────
-  if (reportSections.length === 0 && report.raw_report) {
-    reportSections.push({ title: "Report", content: report.raw_report });
+    reportSections.push({ title: "Patient Explanation", content: mistralText, highlight: true });
   }
 
   const handleCopy = () => {
@@ -249,15 +232,14 @@ function ReportTab({ report }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDownload = () => {
-    const text = reportSections.map(s => `${s.title}\n${s.content}`).join("\n\n");
-    const blob = new Blob([text], { type: "text/plain" });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
-    a.href     = url;
-    a.download = `radiology_report_${new Date().toISOString().slice(0, 10)}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const handlePrint = () => {
+    const originalTitle = document.title;
+    const cleanName = (patientName || 'Patient').replace(/[^a-z0-9]/gi, '_');
+    const date = new Date().toISOString().slice(0, 10);
+    
+    document.title = `Medical_Report_${cleanName}_${date}`;
+    window.print();
+    document.title = originalTitle;
   };
 
   return (
@@ -273,8 +255,8 @@ function ReportTab({ report }) {
           <button className="btn" onClick={handleCopy}>
             {copied ? "Copied" : "Copy"}
           </button>
-          <button className="btn btn--primary" onClick={handleDownload}>
-            Download
+          <button className="btn btn--primary" onClick={handlePrint}>
+            Print Report (PDF)
           </button>
         </div>
       </div>
@@ -290,12 +272,103 @@ function ReportTab({ report }) {
                 highlight={s.highlight || false}
               />
             ))
-          : (
-            <div style={{ padding: "2rem 1.5rem", color: "var(--ink-soft)", fontSize: "0.88rem" }}>
-              No report content available.
-            </div>
-          )
+          : <div style={{ padding: "2rem 1.5rem", color: "var(--ink-soft)" }}>No report content available.</div>
         }
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════
+// Printable Report Component
+// ══════════════════════════════════════════════════
+function PrintableReport({ report, patientName }) {
+  if (!report) return null;
+  const labels = report.labelsFinal || report.pathologies || [];
+  const sections = (report.sections || []).filter(s => !isTechnicalSection(s.title));
+
+  return (
+    <div className="printable-report">
+      <div className="print-header">
+        <div className="print-header-brand">
+          <span className="print-logo">⚕</span>
+          <div>
+            <h1>MedVision AI Analysis</h1>
+            <p>Diagnostic Radiology Center</p>
+          </div>
+        </div>
+        <div className="print-header-date">
+          <p><strong>Report Date:</strong> {new Date().toLocaleDateString()}</p>
+          <p><strong>Analysis ID:</strong> #{report.id || 'N/A'}</p>
+        </div>
+      </div>
+
+      <div className="print-body">
+        <section className="print-section">
+          <h2 className="print-section-title">Analysis Summary</h2>
+          <div className="print-summary-grid">
+            <div className="print-summary-item">
+              <strong>Status:</strong> {report.is_normal ? 'Normal' : 'Abnormalities Detected'}
+            </div>
+          </div>
+        </section>
+
+        <section className="print-section">
+          <h2 className="print-section-title">Imaging Results</h2>
+          <div className="print-images">
+            <div className="print-image-wrap">
+              <p>Original X-Ray</p>
+              <img src={report.image_url} alt="X-Ray" />
+            </div>
+            {report.xai_image && (
+              <div className="print-image-wrap">
+                <p>AI Attention Heatmap</p>
+                <img src={report.xai_image} alt="Heatmap" />
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="print-section">
+          <h2 className="print-section-title">Detected Pathologies</h2>
+          <div className="print-labels">
+            {labels.length > 0 ? (
+              labels.map((l, i) => (
+                <span key={i} className="print-label-badge">{typeof l === 'string' ? l : l.name}</span>
+              ))
+            ) : (
+              <p>No significant pathology detected.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="print-section">
+          <h2 className="print-section-title">Medical Findings</h2>
+          {sections.map((s, i) => (
+            <div key={i} className="print-report-block">
+              <h3>{cleanTitle(s.title)}</h3>
+              <p>{cleanContent(s.content)}</p>
+            </div>
+          ))}
+          {!sections.length && report.medical_report && (
+             <div className="print-report-block">
+               <h3>Radiologist Report</h3>
+               <p>{report.medical_report}</p>
+             </div>
+          )}
+        </section>
+
+        <section className="print-section">
+          <h2 className="print-section-title">Patient Explanation</h2>
+          <div className="print-report-block print-report-block--highlight">
+            <p>{report.mistral_explanation || report.recommendations}</p>
+          </div>
+        </section>
+      </div>
+
+      <div className="print-footer">
+        <p>DISCLAIMER: This report is AI-generated and intended for clinical support. Final diagnosis must be performed by a qualified physician.</p>
+        <p>&copy; {new Date().getFullYear()} MedVision AI Medical Systems</p>
       </div>
     </div>
   );
@@ -425,7 +498,7 @@ function ImagingTab({ report }) {
 // ══════════════════════════════════════════════════
 // Main component
 // ══════════════════════════════════════════════════
-export default function ReportDisplay({ report, labels, isLoading, error }) {
+export default function ReportDisplay({ report, labels, isLoading, error, patientName }) {
   const [activeTab, setActiveTab] = useState("pathologies");
 
   if (isLoading) {
@@ -506,12 +579,6 @@ export default function ReportDisplay({ report, labels, isLoading, error }) {
             }
           </span>
         </div>
-        {report.confidence_score != null && (
-          <div className="status-score">
-            {Math.round(report.confidence_score)}%
-            <span className="status-score-label">Confidence</span>
-          </div>
-        )}
       </div>
 
       <nav className="report-tabs-nav">
@@ -533,9 +600,12 @@ export default function ReportDisplay({ report, labels, isLoading, error }) {
 
       <div className="tab-panel">
         {activeTab === "pathologies" && <PathologiesTab report={report} />}
-        {activeTab === "rapport"     && <ReportTab      report={report} />}
+        {activeTab === "rapport"     && <ReportTab      report={report} patientName={patientName} />}
         {activeTab === "imagerie"    && <ImagingTab     report={report} />}
       </div>
+
+      {/* Hidden on screen, visible on print */}
+      <PrintableReport report={report} patientName={patientName} />
 
     </div>
   );

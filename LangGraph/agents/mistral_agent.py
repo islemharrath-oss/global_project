@@ -49,7 +49,7 @@ logger = logging.getLogger("Agent3")
 
 CFG = {
     # Chemin GGUF local (utilisé par défaut)
-    "llm_model_id"      : r"C:\Users\user\.cache\mistral\mistral-7b-instruct-v0.1.Q4_K_M.gguf",
+    "llm_model_id"      : os.getenv("MISTRAL_MODEL_PATH", r"C:\Users\amine\Desktop\PCD\global_project\LangGraph\models\mistral\mistral-7b-instruct-v0.1.Q4_K_M.gguf"),
     "llm_quantization"  : "4bit",       # pour les modèles HuggingFace uniquement
     "llm_max_new_tokens": 512,
     "llm_temperature"   : 0.3,

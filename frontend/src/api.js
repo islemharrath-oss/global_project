@@ -108,6 +108,8 @@ async function apiFetch(path, options = {}) {
       headers,
     });
 
+    if (response.status === 204) return { response, data: null };
+
     const contentType = response.headers.get('content-type') || '';
     const data = contentType.includes('application/json') ? await response.json() : null;
     return { response, data };
@@ -235,6 +237,49 @@ export async function adminGetPatients(doctorId) {
 export async function adminDeleteUser(userId) {
   return apiFetch(`/admin/users/${userId}/delete/`, { method: 'DELETE' });
 }
+
+export async function adminCreateDoctor(payload) {
+  return apiFetch('/admin/doctors/create/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function adminUpdateDoctor(doctorId, payload) {
+  return apiFetch(`/admin/doctors/${doctorId}/update/`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function adminAssignPatient(patientId, doctorId) {
+  return apiFetch(`/admin/patients/${patientId}/assign/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ doctor_id: doctorId }),
+  });
+}
+
+export async function adminCreatePatient(payload) {
+  return apiFetch('/admin/patients/create/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function adminUpdatePatient(patientId, payload) {
+  return apiFetch(`/admin/patients/${patientId}/update/`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+
+
 
 // ════════════════════════════════════════════════
 // PATIENT endpoints

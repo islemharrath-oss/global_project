@@ -1,3 +1,7 @@
+# Pulled in by accelerate/transformers; classifier also needs torchvision + timm
+torchvision
+timm
+
 accelerate==1.13.0
 albucore==0.0.24
 albumentations==2.0.8

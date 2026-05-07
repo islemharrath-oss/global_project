@@ -1,4 +1,4 @@
-﻿"""
+"""
 medgemma_agent.py - Agent 2 : Clinical Verifier (MedGemma + LoRA)
 ==================================================================
 Role dans le pipeline LangGraph :
@@ -10,6 +10,7 @@ Role dans le pipeline LangGraph :
 import os
 import re
 import json
+from pathlib import Path
 import torch
 from PIL import Image
 from transformers import AutoProcessor, AutoModelForImageTextToText, BitsAndBytesConfig
@@ -26,8 +27,9 @@ CHEXPERT_LABELS = [
 
 HF_TOKEN = os.getenv("HF_TOKEN", "")
 
-# Chemin du modele de base MedGemma en cache local
-BASE_MEDGEMMA_PATH = r"C:\Users\user\.cache\huggingface\hub\models--google--medgemma-4b-it\snapshots\290cda5eeccbee130f987c4ad74a59ae6f196408"
+# Chemin du modele de base MedGemma (env > default = dossier local du projet)
+_BASE_DEFAULT = Path(__file__).resolve().parents[1] / "models" / "medgemma-4b-it"
+BASE_MEDGEMMA_PATH = os.getenv("MEDGEMMA_BASE_PATH", str(_BASE_DEFAULT))
 
 # --- Singleton model ---
 _medgemma_model     = None
@@ -79,23 +81,32 @@ def get_medgemma_model(model_path: str):
     _medgemma_processor.tokenizer.padding_side = "right"
     print("[OK] Processor charge!")
 
-    # -- Modele de base 4-bit depuis le cache local --
-    print("[...] Chargement du modele de base MedGemma (4-bit, shard par shard)...")
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=dtype,
-        bnb_4bit_quant_storage=dtype,
-    )
-    base_model = AutoModelForImageTextToText.from_pretrained(
-        BASE_MEDGEMMA_PATH,
-        local_files_only=True,
-        attn_implementation="eager",
-        torch_dtype=dtype,
-        device_map="auto",
-        quantization_config=bnb_config,
-    )
+    if torch.cuda.is_available():
+        print("[...] Chargement du modele de base MedGemma (4-bit, shard par shard)...")
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.float32,
+            bnb_4bit_quant_storage=torch.float32,
+        )
+        base_model = AutoModelForImageTextToText.from_pretrained(
+            BASE_MEDGEMMA_PATH,
+            local_files_only=True,
+            attn_implementation="eager",
+            torch_dtype=torch.float32,
+            device_map={"": "cuda:0"},
+            quantization_config=bnb_config,
+        )
+    else:
+        print("[...] Chargement du modele de base MedGemma (CPU, pas de 4-bit)...")
+        base_model = AutoModelForImageTextToText.from_pretrained(
+            BASE_MEDGEMMA_PATH,
+            local_files_only=True,
+            attn_implementation="eager",
+            torch_dtype=torch.float32,
+            device_map="cpu",
+        )
     print("[OK] Modele de base charge avec succes!")
 
     # -- LoRA fine-tune depuis le dossier local --

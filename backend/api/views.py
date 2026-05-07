@@ -207,7 +207,7 @@ def analyze_xray(request):
             analysis.impression       = 'Normal' if is_normal else ', '.join(final_labels) if final_labels else ''
             analysis.pathologies      = final_labels if final_labels else classifier_labels
             analysis.recommendations  = mistral_explanation
-            analysis.confidence_score = 0
+            analysis.confidence_score = ai_data.get('confidence_score', 0)
 
             # raw_report sans xai_image pour eviter les gros JSON
             ai_data_without_xai = {k: v for k, v in ai_data.items() if k != 'xai_image'}
@@ -337,9 +337,11 @@ def patients_view(request):
         return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
     if not hasattr(request.user, 'doctor_profile'):
         return Response({'error': 'Doctor account required'}, status=status.HTTP_403_FORBIDDEN)
+        
     if request.method == 'GET':
         patients = PatientProfile.objects.filter(doctor=request.user).order_by('-created_at')
         return Response({'results': PatientProfileSerializer(patients, many=True).data})
+
     serializer = PatientCreateSerializer(data=request.data, context={'request': request})
     serializer.is_valid(raise_exception=True)
     patient = serializer.save(doctor=request.user, created_by=request.user)
@@ -429,19 +431,36 @@ def admin_list_doctors(request):
 
     result = []
     for doc in doctors:
+        # On s'assure que le profile existe bien
+        profile = getattr(doc, 'doctor_profile', None)
+        if not profile:
+            continue
+            
         patients = PatientProfile.objects.filter(doctor=doc).select_related('user')
         result.append({
             'id':           doc.id,
             'username':     doc.username,
             'full_name':    doc.get_full_name(),
             'email':        doc.email,
-            'specialty':    doc.doctor_profile.specialty,
-            'hospital':     doc.doctor_profile.hospital,
+            'specialty':    getattr(profile, 'specialty', 'N/A'),
+            'hospital':     getattr(profile, 'hospital', ''),
             'patient_count': patients.count(),
             'patients':     PatientProfileSerializer(patients, many=True).data,
         })
 
-    return Response({'count': len(result), 'results': result})
+    # -- Patients sans docteur --
+    try:
+        orphans = PatientProfile.objects.filter(doctor__isnull=True).select_related('user')
+        unassigned = PatientProfileSerializer(orphans, many=True).data
+    except Exception as e:
+        print(f"Error serializing orphans: {e}")
+        unassigned = []
+
+    return Response({
+        'count': len(result), 
+        'results': result,
+        'unassigned_patients': unassigned
+    })
 
 
 @api_view(['GET'])
@@ -459,6 +478,99 @@ def admin_list_patients(request, doctor_id):
     return Response({'results': PatientProfileSerializer(patients, many=True).data})
 
 
+@api_view(['POST'])
+def admin_assign_patient(request, patient_id):
+    """Admin : assigner un patient à un doctor."""
+    if not is_admin(request.user):
+        return Response({'error': 'Admin required'}, status=403)
+
+    doctor_id = request.data.get('doctor_id')
+    if not doctor_id:
+        return Response({'error': 'doctor_id required'}, status=400)
+
+    try:
+        patient = PatientProfile.objects.get(pk=patient_id)
+        doctor  = User.objects.get(pk=doctor_id, doctor_profile__isnull=False)
+        
+        patient.doctor = doctor
+        patient.save()
+        
+        return Response({'message': f'Patient assigned to Dr. {doctor.get_full_name() or doctor.username}'})
+    except PatientProfile.DoesNotExist:
+        return Response({'error': 'Patient not found'}, status=404)
+    except User.DoesNotExist:
+        return Response({'error': 'Doctor not found'}, status=404)
+
+
+@api_view(['POST'])
+def admin_create_patient(request):
+    """Admin : créer un nouveau patient directement."""
+    if not is_admin(request.user):
+        return Response({'error': 'Admin required'}, status=403)
+
+    serializer = PatientCreateSerializer(data=request.data, context={'request': request})
+    serializer.is_valid(raise_exception=True)
+    
+    # Overwrite the default logic that assigns to request.user
+    patient = serializer.save()
+    
+    # If a doctor_id was provided, assign it
+    doctor_id = request.data.get('doctor_id')
+    if doctor_id:
+        try:
+            doctor = User.objects.get(pk=doctor_id, doctor_profile__isnull=False)
+            patient.doctor = doctor
+            patient.save()
+        except User.DoesNotExist:
+            pass
+
+    return Response(PatientProfileSerializer(patient).data, status=201)
+
+
+@api_view(['PATCH', 'PUT'])
+def admin_update_patient(request, patient_id):
+    """Admin : modifier les infos d'un patient."""
+    if not is_admin(request.user):
+        return Response({'error': 'Admin required'}, status=403)
+
+    try:
+        patient = PatientProfile.objects.get(pk=patient_id)
+        user = patient.user
+
+        # Update User fields
+        user.first_name = request.data.get('first_name', user.first_name)
+        user.last_name  = request.data.get('last_name', user.last_name)
+        user.email      = request.data.get('email', user.email)
+        user.save()
+
+        # Update Profile fields
+        patient.medical_record_number = request.data.get('medical_record_number', patient.medical_record_number)
+        patient.phone                 = request.data.get('phone', patient.phone)
+        patient.address               = request.data.get('address', patient.address)
+        patient.emergency_contact     = request.data.get('emergency_contact', patient.emergency_contact)
+        
+        # Date of birth handling
+        dob = request.data.get('date_of_birth')
+        if dob:
+            patient.date_of_birth = dob
+
+        # Doctor assignment
+        doctor_id = request.data.get('doctor_id')
+        if doctor_id:
+            try:
+                doctor = User.objects.get(pk=doctor_id, doctor_profile__isnull=False)
+                patient.doctor = doctor
+            except User.DoesNotExist:
+                pass
+        elif 'doctor_id' in request.data and request.data['doctor_id'] is None:
+            patient.doctor = None
+
+        patient.save()
+        return Response(PatientProfileSerializer(patient).data)
+    except PatientProfile.DoesNotExist:
+        return Response({'error': 'Patient not found'}, status=404)
+
+
 @api_view(['DELETE'])
 def admin_delete_user(request, user_id):
     """Admin : supprimer n'importe quel utilisateur."""
@@ -470,33 +582,51 @@ def admin_delete_user(request, user_id):
         if user.is_superuser:
             return Response({'error': 'Cannot delete superuser'}, status=400)
         user.delete()
-        return Response({'message': 'User deleted'}, status=204)
+        return Response(None, status=204)
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=404)
 
 
 @api_view(['POST'])
-def admin_add_doctor(request, user_id):
-    """Admin : promouvoir un user en doctor."""
+def admin_create_doctor(request):
+    """Admin : créer un nouveau doctor directement."""
+    if not is_admin(request.user):
+        return Response({'error': 'Admin required'}, status=403)
+
+    serializer = DoctorRegisterSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.save()
+    return Response(AuthUserSerializer(user).data, status=201)
+
+
+@api_view(['PATCH', 'PUT'])
+def admin_update_doctor(request, doctor_id):
+    """Admin : modifier les informations d'un doctor."""
     if not is_admin(request.user):
         return Response({'error': 'Admin required'}, status=403)
 
     try:
-        user = User.objects.get(pk=user_id)
-        serializer = DoctorRegisterSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        DoctorProfile.objects.get_or_create(
-            user=user,
-            defaults={
-                'specialty':      request.data.get('specialty', ''),
-                'license_number': request.data.get('license_number', ''),
-                'hospital':       request.data.get('hospital', ''),
-                'phone':          request.data.get('phone', ''),
-            }
-        )
-        return Response(AuthUserSerializer(user).data, status=201)
+        user = User.objects.get(pk=doctor_id)
+        profile = getattr(user, 'doctor_profile', None)
+        if not profile:
+            return Response({'error': 'User is not a doctor'}, status=400)
+
+        # Update User fields
+        user.first_name = request.data.get('first_name', user.first_name)
+        user.last_name  = request.data.get('last_name', user.last_name)
+        user.email      = request.data.get('email', user.email)
+        user.save()
+
+        # Update Profile fields
+        profile.specialty      = request.data.get('specialty', profile.specialty)
+        profile.hospital       = request.data.get('hospital', profile.hospital)
+        profile.phone          = request.data.get('phone', profile.phone)
+        profile.license_number = request.data.get('license_number', profile.license_number)
+        profile.save()
+
+        return Response(AuthUserSerializer(user).data)
     except User.DoesNotExist:
-        return Response({'error': 'User not found'}, status=404)
+        return Response({'error': 'Doctor not found'}, status=404)
 
 
 # ════════════════════════════════════════════════════

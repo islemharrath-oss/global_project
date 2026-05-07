@@ -18,10 +18,13 @@ urlpatterns = [
     path('auth/me/',              views.me,               name='me'),
 
     # Admin endpoints
-    path('admin/doctors/',                              views.admin_list_doctors,   name='admin-doctors'),
-    path('admin/doctors/<int:doctor_id>/patients/',    views.admin_list_patients,  name='admin-patients'),
+    path('admin/doctors/',                             views.admin_list_doctors,   name='admin-doctors'),
+    path('admin/doctors/create/',                      views.admin_create_doctor,  name='admin-create-doctor'),
+    path('admin/doctors/<int:doctor_id>/update/',      views.admin_update_doctor,  name='admin-update-doctor'),
+    path('admin/patients/create/',                     views.admin_create_patient, name='admin-create-patient'),
+    path('admin/patients/<int:patient_id>/update/',    views.admin_update_patient, name='admin-update-patient'),
+    path('admin/patients/<int:patient_id>/assign/',    views.admin_assign_patient, name='admin-assign-patient'),
     path('admin/users/<int:user_id>/delete/',          views.admin_delete_user,    name='admin-delete-user'),
-    path('admin/users/<int:user_id>/add-doctor/',      views.admin_add_doctor,     name='admin-add-doctor'),
 
     # Patient portal
     path('patient/analyze/', views.patient_analyze, name='patient-analyze'),

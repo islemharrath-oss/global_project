@@ -101,9 +101,8 @@ function PatientDashboard({ patients, onPatientCreated }) {
               {patients.map((patient) => (
                 <div
                   key={patient.id}
-                  className={`patient-item ${
-                    selectedPatientId === patient.id ? 'active' : ''
-                  }`}
+                  className={`patient-item ${selectedPatientId === patient.id ? 'active' : ''
+                    }`}
                   onClick={() => handleSelectPatient(patient.id)}
                 >
                   <div className="patient-item__badge">

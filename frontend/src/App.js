@@ -17,18 +17,18 @@ import {
 } from './api';
 
 function App() {
-  const [activePage, setActivePage]   = useState('dashboard');
+  const [activePage, setActivePage] = useState('dashboard');
   const [authLoading, setAuthLoading] = useState(true);
-  const [authError, setAuthError]     = useState('');
-  const [user, setUser]               = useState(null);
-  const [patients, setPatients]       = useState([]);
+  const [authError, setAuthError] = useState('');
+  const [user, setUser] = useState(null);
+  const [patients, setPatients] = useState([]);
 
   // ── Determine role ──────────────────────────────────────────────────────
   const getRole = (u) => {
     if (!u) return null;
     if (u.is_staff || u.role === 'admin') return 'admin';
     if (u.role === 'patient' || u.patient_profile) return 'patient';
-    if (u.role === 'doctor' || u.doctor_profile)   return 'doctor';
+    if (u.role === 'doctor' || u.doctor_profile) return 'doctor';
     return 'doctor'; // fallback
   };
 

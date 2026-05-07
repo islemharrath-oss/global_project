@@ -323,11 +323,23 @@ class ClassifierAgent:
             print(f"  [WARN] Grad-CAM echoue : {e}")
             import traceback; traceback.print_exc()
 
+        # ── Score de confiance ───────────────────────────────────────────────
+        if positive_labels and "No Finding" not in positive_labels:
+            # Cas anormal : moyenne des probabilités des pathologies détectées
+            relevant_probs = [details[l]["prob"] for l in positive_labels]
+            confidence_score = float(np.mean(relevant_probs) * 100)
+        elif "No Finding" in details:
+            # Cas normal : probabilité du label "No Finding"
+            confidence_score = float(details["No Finding"]["prob"] * 100)
+        else:
+            confidence_score = 0.0
+
         return {
-            "positive_labels": positive_labels,
-            "is_normal":       is_normal,
-            "details":         details,
-            "xai_image":       xai_base64,
+            "positive_labels":  positive_labels,
+            "is_normal":        is_normal,
+            "details":          details,
+            "xai_image":        xai_base64,
+            "confidence_score": confidence_score,
         }
 
 
@@ -361,4 +373,5 @@ def classifier_node(state: dict) -> dict:
     state["is_normal"]          = result["is_normal"]
     state["classifier_details"] = result["details"]
     state["xai_image"]          = result.get("xai_image")
+    state["confidence_score"]   = result.get("confidence_score", 0)
     return state

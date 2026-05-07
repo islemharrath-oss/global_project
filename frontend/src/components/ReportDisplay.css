@@ -747,6 +747,145 @@
 /* ══════════════════════════════════════════════════
    Responsive
 ══════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   Print Styles (PDF Export)
+   ══════════════════════════════════════════════════ */
+.printable-report {
+  display: none;
+}
+
+@media print {
+  /* Hide EVERYTHING except the printable report */
+  body * {
+    visibility: hidden;
+  }
+  .printable-report, .printable-report * {
+    visibility: visible;
+  }
+  .printable-report {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white;
+    padding: 40px;
+    color: #000;
+  }
+
+  .print-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 3px solid #0a8c87;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+  }
+
+  .print-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .print-logo {
+    font-size: 40px;
+    color: #0a8c87;
+  }
+
+  .print-header-brand h1 {
+    font-size: 24px;
+    margin: 0;
+    color: #000;
+  }
+
+  .print-header-date {
+    text-align: right;
+    font-size: 14px;
+  }
+
+  .print-section {
+    margin-bottom: 40px;
+    break-inside: avoid;
+  }
+
+  .print-section-title {
+    font-size: 18px;
+    border-bottom: 1px solid #daeae9;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    color: #0a8c87;
+  }
+
+  .print-summary-grid {
+    display: flex;
+    gap: 40px;
+    background: #f4f9f9;
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .print-images {
+    display: flex;
+    gap: 20px;
+  }
+
+  .print-image-wrap {
+    flex: 1;
+    text-align: center;
+  }
+
+  .print-image-wrap img {
+    max-width: 100%;
+    max-height: 400px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .print-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .print-label-badge {
+    background: #e6f5f4;
+    border: 1px solid #b2dbd9;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .print-report-block {
+    margin-bottom: 20px;
+  }
+
+  .print-report-block h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .print-report-block p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  .print-report-block--highlight {
+    background: #fdf6e3;
+    padding: 15px;
+    border-left: 4px solid #c47f17;
+  }
+
+  .print-footer {
+    margin-top: 50px;
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+  }
+}
+
 @media (max-width: 640px) {
   .report-tabs-nav   { padding: 0 0.75rem; overflow-x: auto; }
   .tab-btn           { padding: 0.75rem 0.9rem; font-size: 0.78rem; }
@@ -757,4 +896,4 @@
   .section-body      { padding: 0.25rem 1rem 1rem 2.8rem; }
   .imaging-panel     { padding: 1rem; }
   .imaging-viewer    { min-height: 220px; }
-}
+}
