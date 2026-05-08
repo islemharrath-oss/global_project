@@ -3,7 +3,7 @@
 A modern, full-stack web application for analyzing X-ray images using a **Multi-Agent AI Pipeline** (LangGraph) with explainable AI (XAI) visualization and professional medical PDF reporting.
 
 ## 🎥 Project Demo
-👉 **[Click here to watch the Demo Video]([INSERT_YOUR_DEMO_VIDEO_LINK_HERE](https://drive.google.com/file/d/11nrNAKVAVYPa3GOAV8tHYLwyopUVsY9d/view?usp=sharing))**
+👉 **[Click here to watch the Demo Video](https://drive.google.com/file/d/11nrNAKVAVYPa3GOAV8tHYLwyopUVsY9d/view?usp=sharing)**
 
 ## 🎯 Project Overview
 MedVision is a complete medical ecosystem featuring a Django backend, a React frontend, and a dedicated local AI service.
@@ -22,7 +22,7 @@ MedVision is a complete medical ecosystem featuring a Django backend, a React fr
 Because the AI models are too large for GitHub (over the 100MB limit), you must download them manually and place them in the correct folders before running the AI service.
 
 1. **CNN Models (Agent 1 - Classifier)**
-   - Download the model weights from this Drive link: 👉 **[Insert Google Drive Link Here]**
+   - Download the model weights from this Drive link: 👉 **[Download CNN Models Here](https://drive.google.com/drive/folders/1j-HC2YX-s1b1Z5bFNtLnvXB4G04570Ie?usp=sharing)**
    - Place them in: `LangGraph/models/`
    - Required files: 
      - `best_densenet121.pth`
