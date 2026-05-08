@@ -2,10 +2,10 @@
 
 A modern, full-stack web application for analyzing X-ray images using a **Multi-Agent AI Pipeline** (LangGraph) with explainable AI (XAI) visualization and professional medical PDF reporting.
 
-## 🎥 Project Demo
-👉 **[Click here to watch the Demo Video](https://drive.google.com/file/d/11nrNAKVAVYPa3GOAV8tHYLwyopUVsY9d/view?usp=sharing)**
+##  Project Demo
+**[Click here to watch the Demo Video](https://drive.google.com/file/d/11nrNAKVAVYPa3GOAV8tHYLwyopUVsY9d/view?usp=sharing)**
 
-## 🎯 Project Overview
+##  Project Overview
 MedVision is a complete medical ecosystem featuring a Django backend, a React frontend, and a dedicated local AI service.
 - **Admin Dashboard**: Manage doctors and patients, maintain data integrity.
 - **Doctor Portal**: Upload X-rays, review analysis history, and export professional PDF medical reports.
@@ -14,15 +14,15 @@ MedVision is a complete medical ecosystem featuring a Django backend, a React fr
   - **Agent 2 (MedGemma)**: Drafts structured clinical findings and impressions based on the classifier's output.
   - **Agent 3 (Mistral + CheXbert)**: Translates the clinical report into a patient-friendly explanation (Mistral) and instantly checks it against clinical labels to prevent hallucinations (CheXbert). This combined translation/verification loop improves scalability, consistency, and deployment feasibility.
 
-⚠️ *Disclaimer: MedVision is an aid-to-diagnosis tool only and does not replace professional medical consultation.*
+ *Disclaimer: MedVision is an aid-to-diagnosis tool only and does not replace professional medical consultation.*
 
 ---
 
-## 📥 Downloading the AI Models
+##  Downloading the AI Models
 Because the AI models are too large for GitHub (over the 100MB limit), you must download them manually and place them in the correct folders before running the AI service.
 
 1. **CNN Models (Agent 1 - Classifier)**
-   - Download the model weights from this Drive link: 👉 **[Download CNN Models Here](https://drive.google.com/drive/folders/1j-HC2YX-s1b1Z5bFNtLnvXB4G04570Ie?usp=sharing)**
+   - Download the model weights from this Drive link:  **[Download CNN Models Here](https://drive.google.com/drive/folders/1j-HC2YX-s1b1Z5bFNtLnvXB4G04570Ie?usp=sharing)**
    - Place them in: `LangGraph/models/`
    - Required files: 
      - `best_densenet121.pth`
@@ -39,7 +39,7 @@ Because the AI models are too large for GitHub (over the 100MB limit), you must 
 
 ---
 
-## 🚀 Quick Start & Setup
+##  Quick Start & Setup
 
 ### Prerequisites
 - Python 3.10+
@@ -109,14 +109,14 @@ uvicorn api:app --host 127.0.0.1 --port 9000
 
 ---
 
-## 🔌 System Architecture
+##  System Architecture
 - **Django REST API**: `http://localhost:8000/api/`
 - **LangGraph AI API**: `http://localhost:9000/analyze`
 - **React Frontend**: `http://localhost:3000/`
 
 ---
 
-## 🔐 Security & Roles
+##  Security & Roles
 - **Admin**: Full CRUD access for Doctors and Patients. Can delete records.
 - **Doctor**: Read-only access to Patient registration. Can upload X-rays, view history, and generate PDF reports.
 
