@@ -35,7 +35,7 @@ Because the AI models are too large for GitHub (over the 100MB limit), you must 
    - Place it in: `LangGraph/models/mistral/`
 
 3. **MedGemma (Agent 2 - Clinical Report)**
-   - Download the model weights from this Drive link: 👉 **[Download MedGemma LoRA Here](https://drive.google.com/drive/folders/1h1OsPyiN2k1wjgdCCILiQA5_GY797DCr?usp=sharing)**
+   - Download the model weights from this Drive link:  **[Download MedGemma LoRA Here](https://drive.google.com/drive/folders/1h1OsPyiN2k1wjgdCCILiQA5_GY797DCr?usp=sharing)**
    - Place the MedGemma LoRA weights in: `LangGraph/models/medgemma-mimic-lora-final/`
    - **Fine-Tuning Architecture**: This agent was fine-tuned on clinical medical reports using **QLoRA (Quantized Low-Rank Adaptation)**. We utilized 4-bit NormalFloat (`nf4`) quantization via `bitsandbytes` and injected LoRA adapters (`PeftModel`) to achieve high-accuracy clinical text generation on consumer-grade GPUs without exhausting VRAM.
 
