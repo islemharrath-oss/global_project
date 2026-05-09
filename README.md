@@ -18,6 +18,13 @@ MedVision is a complete medical ecosystem featuring a Django backend, a React fr
 
 ---
 
+##  Global System Architecture
+
+ <img width="1264" height="842" alt="general_pipeline" src="https://github.com/user-attachments/assets/bcd0413e-def9-46e6-8bcb-8f46fdeff269" />
+
+The architecture illustrates the interaction between the React frontend, Django backend,database, and the local LangGraph multi-agent AI pipeline.
+
+---
 ##  Downloading the AI Models
 Because the AI models are too large for GitHub (over the 100MB limit), you must download them manually and place them in the correct folders before running the AI service.
 
